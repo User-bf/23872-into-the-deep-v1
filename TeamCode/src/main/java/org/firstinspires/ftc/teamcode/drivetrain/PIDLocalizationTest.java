@@ -16,7 +16,7 @@ public class PIDLocalizationTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        PIDDrivetrain drive = new PIDDrivetrain(hardwareMap, new Pose2D(DistanceUnit.INCH,0,0,
+        PIDDrivetrain drive = new PIDDrivetrain(hardwareMap, telemetry, new Pose2D(DistanceUnit.INCH,0,0,
                 AngleUnit.RADIANS, 0));
 
         waitForStart();
@@ -26,9 +26,9 @@ public class PIDLocalizationTest extends LinearOpMode {
             drive.updatePoseEstimate();
             driveTrainControl(drive);
 
-            double x = drive.currentPose.getX(DistanceUnit.INCH);
-            double y = drive.currentPose.getY(DistanceUnit.INCH);
-            double heading = drive.currentPose.getHeading(AngleUnit.DEGREES);
+            double x = drive.getPose().getX(DistanceUnit.INCH);
+            double y = drive.getPose().getY(DistanceUnit.INCH);
+            double heading = drive.getPose().getHeading(AngleUnit.DEGREES);
             Pose2d rrPose = new Pose2d(x, y, Math.toRadians(heading));
 
             telemetry.addData("x", x);
