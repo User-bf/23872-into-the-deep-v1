@@ -31,8 +31,8 @@ public class PIDDrivetrain {
         public double kP = 0.1;
         public double kI = 0.0;
         public double kD = 0.0;
-        public double xOffset = 119.9896;
-        public double yOffset = 132.0038;
+        public double xOffset = 4.724;
+        public double yOffset = 5.197;
         public GoBildaPinpointDriver.GoBildaOdometryPods encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
         public GoBildaPinpointDriver.EncoderDirection xDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
         public GoBildaPinpointDriver.EncoderDirection yDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
