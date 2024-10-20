@@ -22,15 +22,27 @@ public class PIDDrivetrain {
     private Pose2D currentPose;
     private Pose2D targetPose;
     private PIDController forwardPIDControl;
+    private PIDController strafePIDControl;
+    private PIDController headPIDControl;
     private Telemetry telemetry;
 
     private double calculatedLeftFrontPower, calculatedLeftBackPower, calculatedRightFrontPower,
             calculatedRightBackPower;
 
     public static class Params {
-        public double kP = 0.1;
-        public double kI = 0.0;
-        public double kD = 0.0;
+        public double forward_kP = 0.1;
+        public double forward_kI = 0.0;
+        public double forward_kD = 0.0;
+
+        public double strafe_kP = 0.0;
+        public double strafe_kI = 0.0;
+        public double strafe_kD = 0.0;
+
+        public double head_kP = 0.0;
+        public double head_kI = 0.0;
+        public double head_kD = 0.0;
+
+
         public double xOffset = 4.724;
         public double yOffset = 5.197;
         public GoBildaPinpointDriver.GoBildaOdometryPods encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
@@ -51,9 +63,19 @@ public class PIDDrivetrain {
         pinpoint.setEncoderDirections(PARAMS.xDirection, PARAMS.yDirection);
         resetPosition(currentPose);
 
-        forwardPIDControl = new PIDController(PARAMS.kP, PARAMS.kI, PARAMS.kD);
+        forwardPIDControl = new PIDController(PARAMS.forward_kP, PARAMS.forward_kI, PARAMS.forward_kD);
         forwardPIDControl.setInputBounds(-72, 72);
-        forwardPIDControl.setOutputBounds(0,0.2);
+        forwardPIDControl.setOutputBounds(-0.2,0.2);
+
+        strafePIDControl = new PIDController(PARAMS.strafe_kP, PARAMS.strafe_kI, PARAMS.strafe_kD);
+        strafePIDControl.setInputBounds(-72, 72);
+        forwardPIDControl.setOutputBounds(-0.2,0.2);
+
+        headPIDControl = new PIDController(PARAMS.head_kP, PARAMS.head_kI, PARAMS.head_kD);
+        headPIDControl.setInputBounds(0, 360);
+        headPIDControl.setOutputBounds(-0.1, 0.1);
+
+
 
         leftFront = hardwareMap.get(DcMotorEx.class, "FL");
         leftBack = hardwareMap.get(DcMotorEx.class, "BL");
@@ -103,12 +125,14 @@ public class PIDDrivetrain {
     }
 
     private void calculateMotorPowers() {
-        double forwardPower = -forwardPIDControl.update(currentPose.getX(DistanceUnit.INCH));
+        double forwardPower = forwardPIDControl.update(currentPose.getX(DistanceUnit.INCH));
+        double strafePower =  strafePIDControl.update(currentPose.getY(DistanceUnit.INCH));
+        double headPower = headPIDControl.update(currentPose.getHeading(AngleUnit.DEGREES));
         telemetry.addData("forwardPower", forwardPower);
-        calculatedLeftFrontPower = forwardPower;
-        calculatedLeftBackPower = forwardPower;
-        calculatedRightFrontPower = forwardPower;
-        calculatedRightBackPower = forwardPower;
+        calculatedLeftFrontPower = forwardPower + strafePower + headPower;
+        calculatedLeftBackPower = forwardPower - strafePower + headPower;
+        calculatedRightFrontPower = forwardPower - strafePower - headPower;
+        calculatedRightBackPower = forwardPower + strafePower - headPower;
     }
 
     public Pose2D updatePoseEstimate() {
