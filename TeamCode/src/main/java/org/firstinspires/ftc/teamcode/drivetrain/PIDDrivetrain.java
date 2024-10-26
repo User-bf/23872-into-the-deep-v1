@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.drivetrain;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.ftc.FlightRecorder;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,10 +10,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.PinpointDrive;
-import org.firstinspires.ftc.teamcode.messages.PoseMessage;
 import org.firstinspires.ftc.teamcode.util.PIDController;
+import org.firstinspires.ftc.teamcode.util.PathPoint;
 
+import java.util.ArrayList;
+
+@Config
 public class PIDDrivetrain {
     public DcMotorEx leftFront, leftBack, rightBack, rightFront;
     private Pose2D lastPinpointPose;
@@ -30,16 +30,16 @@ public class PIDDrivetrain {
             calculatedRightBackPower;
 
     public static class Params {
-        public double forward_kP = 0.1;
-        public double forward_kI = 0.0;
-        public double forward_kD = 0.0;
+        public double forward_kP = 0.125;
+        public double forward_kI = 0.0025;
+        public double forward_kD = 0.01;
 
-        public double strafe_kP = 0.0;
-        public double strafe_kI = 0.0;
-        public double strafe_kD = 0.0;
+        public double strafe_kP = 0.025;
+        public double strafe_kI = 0.0025;
+        public double strafe_kD = 0.005;
 
-        public double head_kP = 0.0;
-        public double head_kI = 0.0;
+        public double head_kP = 0.025;
+        public double head_kI = 0.001;
         public double head_kD = 0.0;
 
 
@@ -53,10 +53,13 @@ public class PIDDrivetrain {
     public static Params PARAMS = new Params();
     public GoBildaPinpointDriver pinpoint;
 
+    private ArrayList<PathPoint> pathPoints;
+    private PathPoint currentPathPoint;
 
     public PIDDrivetrain(HardwareMap hardwareMap, Telemetry telemetry, Pose2D pose) {
         currentPose = pose;
         this.telemetry = telemetry;
+        pathPoints = new ArrayList<PathPoint>();
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
         pinpoint.setOffsets(DistanceUnit.MM.fromInches(PARAMS.xOffset), DistanceUnit.MM.fromInches(PARAMS.yOffset));
         pinpoint.setEncoderResolution(PARAMS.encoderResolution);
@@ -65,15 +68,15 @@ public class PIDDrivetrain {
 
         forwardPIDControl = new PIDController(PARAMS.forward_kP, PARAMS.forward_kI, PARAMS.forward_kD);
         forwardPIDControl.setInputBounds(-72, 72);
-        forwardPIDControl.setOutputBounds(-0.2,0.2);
+        forwardPIDControl.setOutputBounds(-1.0,1.0);
 
         strafePIDControl = new PIDController(PARAMS.strafe_kP, PARAMS.strafe_kI, PARAMS.strafe_kD);
         strafePIDControl.setInputBounds(-72, 72);
-        forwardPIDControl.setOutputBounds(-0.2,0.2);
+        forwardPIDControl.setOutputBounds(-1.0,1.0);
 
         headPIDControl = new PIDController(PARAMS.head_kP, PARAMS.head_kI, PARAMS.head_kD);
-        headPIDControl.setInputBounds(0, 360);
-        headPIDControl.setOutputBounds(-0.1, 0.1);
+        headPIDControl.setInputBounds(-360, 360);
+        headPIDControl.setOutputBounds(-1.0, 1.0);
 
 
 
@@ -86,11 +89,7 @@ public class PIDDrivetrain {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void setCurrentPose(Pose2D currentPose) {
-        this.currentPose = currentPose;
-    }
-
-    public void setTargetPose(Pose2D targetPose) {
+    private void setTargetPose(Pose2D targetPose) {
         this.targetPose = targetPose;
     }
 
@@ -105,34 +104,62 @@ public class PIDDrivetrain {
     }
 
     private Pose2D queryPose() {
-        Pose2D pose = pinpoint.getPosition();
-        telemetry.addData("Pinpoint Position X", pose.getX(DistanceUnit.INCH));
-        telemetry.addData("Pinpoint Position Y", pose.getY(DistanceUnit.INCH));
-        telemetry.addData("Pinpoint Heading", pose.getHeading(AngleUnit.DEGREES));
-        return pose;
+        return pinpoint.getPosition();
     }
 
-    public Pose2D getPose() { return currentPose; }
+    public Pose2D getCurrentPose() { return currentPose; }
 
-    public void moveToTargetPose() {
-        telemetry.addData("currentPoseX", currentPose.getX(DistanceUnit.INCH));
-        telemetry.addData("targetPoseX", targetPose.getX(DistanceUnit.INCH));
+    public Pose2D getTargetPose() { return targetPose; }
+
+    private void moveToTargetPose() {
         forwardPIDControl.setTarget(targetPose.getX(DistanceUnit.INCH));
+        strafePIDControl.setTarget(targetPose.getY(DistanceUnit.INCH));
+        headPIDControl.setTarget(targetPose.getHeading(AngleUnit.DEGREES));
         calculateMotorPowers();
 
         setDrivePower(calculatedLeftFrontPower, calculatedLeftBackPower, calculatedRightFrontPower,
                 calculatedRightBackPower);
     }
 
+    public void addPathPoint(Pose2D pathPoint, double displacementTolerance, double headingTolerance) {
+        pathPoints.add(new PathPoint(pathPoint, displacementTolerance, headingTolerance));
+    }
+
+    public void drivePath() {
+        updatePoseEstimate();
+        PathPoint firstPathPoint = pathPoints.get(0);
+        if (firstPathPoint.inTolerance(currentPose)) {
+            pathPoints.remove(0);
+        }
+        currentPathPoint = pathPoints.get(0);
+
+        setTargetPose(currentPathPoint.getPoint());
+        moveToTargetPose();
+    }
+
     private void calculateMotorPowers() {
-        double forwardPower = forwardPIDControl.update(currentPose.getX(DistanceUnit.INCH));
+        double forwardPower = -forwardPIDControl.update(currentPose.getX(DistanceUnit.INCH));
         double strafePower =  strafePIDControl.update(currentPose.getY(DistanceUnit.INCH));
         double headPower = headPIDControl.update(currentPose.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("forwardPower", forwardPower);
+
+        headPIDControl.getTarget();
+        telemetry.addData("headPIDControl target", headPIDControl.getTarget());
+        telemetry.addData("headPower", headPower);
+        telemetry.addData("target heading", getTargetPose().getHeading(AngleUnit.DEGREES));
+        telemetry.addData("current heading", getCurrentPose().getHeading(AngleUnit.DEGREES));
+
         calculatedLeftFrontPower = forwardPower + strafePower + headPower;
         calculatedLeftBackPower = forwardPower - strafePower + headPower;
         calculatedRightFrontPower = forwardPower - strafePower - headPower;
         calculatedRightBackPower = forwardPower + strafePower - headPower;
+
+//        telemetry.addData("forwardPower", forwardPower);
+//        telemetry.addData("strafePower", strafePower);
+//        telemetry.addData("headPower", headPower);
+//        telemetry.addData("calculatedLeftFrontPower", calculatedLeftFrontPower);
+//        telemetry.addData("calculatedLeftBackPower", calculatedLeftBackPower);
+//        telemetry.addData("calculatedRightFrontPower", calculatedRightFrontPower);
+//        telemetry.addData("calculatedRightBackPower", calculatedRightBackPower);
     }
 
     public Pose2D updatePoseEstimate() {

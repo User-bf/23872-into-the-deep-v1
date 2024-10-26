@@ -26,9 +26,9 @@ public class PIDLocalizationTest extends LinearOpMode {
             drive.updatePoseEstimate();
             driveTrainControl(drive);
 
-            double x = drive.getPose().getX(DistanceUnit.INCH);
-            double y = drive.getPose().getY(DistanceUnit.INCH);
-            double heading = drive.getPose().getHeading(AngleUnit.DEGREES);
+            double x = drive.getCurrentPose().getX(DistanceUnit.INCH);
+            double y = drive.getCurrentPose().getY(DistanceUnit.INCH);
+            double heading = drive.getCurrentPose().getHeading(AngleUnit.DEGREES);
             Pose2d rrPose = new Pose2d(x, y, Math.toRadians(heading));
 
             telemetry.addData("x", x);

@@ -20,18 +20,28 @@ public class PIDAutoTesting extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Pose2D initialPose = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
-        Pose2D targetPose = new Pose2D(DistanceUnit.INCH, 20, 0, AngleUnit.DEGREES, 0);
+        Pose2D targetPose = new Pose2D(DistanceUnit.INCH, 20, 20, AngleUnit.DEGREES, 45);
 
         PIDDrivetrain drive = new PIDDrivetrain(hardwareMap, telemetry, initialPose);
         drive.resetPosition(initialPose);
 
-        telemetry.addData("Starting Initial Pose", drive.getPose().getX(DistanceUnit.INCH));
+        drive.addPathPoint(targetPose, 0.5, 2);
+        drive.addPathPoint(initialPose, 0.5, 2);
+        drive.addPathPoint(targetPose, 0.5, 2);
+        drive.addPathPoint(initialPose, 0.5, 2);
+
+        telemetry.update();
+
         waitForStart();
 
         while (opModeIsActive()) {
-            drive.updatePoseEstimate();
-            drive.setTargetPose(targetPose);
-            drive.moveToTargetPose();
+            drive.drivePath();
+            telemetry.addData("Target X", drive.getTargetPose().getX(DistanceUnit.INCH));
+            telemetry.addData("Current X", drive.getCurrentPose().getX(DistanceUnit.INCH));
+            telemetry.addData("Target Y", drive.getTargetPose().getY(DistanceUnit.INCH));
+            telemetry.addData("Current Y", drive.getCurrentPose().getY(DistanceUnit.INCH));
+            telemetry.addData("Target Heading", drive.getTargetPose().getHeading(AngleUnit.DEGREES));
+            telemetry.addData("Current Heading", drive.getCurrentPose().getHeading(AngleUnit.DEGREES));
             telemetry.update();
 
             drawField(drive);
@@ -39,9 +49,9 @@ public class PIDAutoTesting extends LinearOpMode {
     }
 
     private void drawField(PIDDrivetrain drive) {
-        double x = drive.getPose().getX(DistanceUnit.INCH);
-        double y = drive.getPose().getY(DistanceUnit.INCH);
-        double heading = drive.getPose().getHeading(AngleUnit.DEGREES);
+        double x = drive.getCurrentPose().getX(DistanceUnit.INCH);
+        double y = drive.getCurrentPose().getY(DistanceUnit.INCH);
+        double heading = drive.getCurrentPose().getHeading(AngleUnit.DEGREES);
         Pose2d rrPose = new Pose2d(x, y, Math.toRadians(heading));
         TelemetryPacket packet = new TelemetryPacket();
         packet.fieldOverlay().setStroke("#3F51B5");
