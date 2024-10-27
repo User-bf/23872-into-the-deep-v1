@@ -36,13 +36,6 @@ public class PIDAutoTesting extends LinearOpMode {
 
         while (opModeIsActive()) {
             drive.drivePath();
-            telemetry.addData("Target X", drive.getTargetPose().getX(DistanceUnit.INCH));
-            telemetry.addData("Current X", drive.getCurrentPose().getX(DistanceUnit.INCH));
-            telemetry.addData("Target Y", drive.getTargetPose().getY(DistanceUnit.INCH));
-            telemetry.addData("Current Y", drive.getCurrentPose().getY(DistanceUnit.INCH));
-            telemetry.addData("Target Heading", drive.getTargetPose().getHeading(AngleUnit.DEGREES));
-            telemetry.addData("Current Heading", drive.getCurrentPose().getHeading(AngleUnit.DEGREES));
-            telemetry.update();
         }
     }
 }

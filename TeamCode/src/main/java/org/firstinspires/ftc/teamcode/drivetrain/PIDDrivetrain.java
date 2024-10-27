@@ -216,7 +216,7 @@ public class PIDDrivetrain {
 
         BrainVector currentTargetPoint = new BrainVector(x1, y1);
         BrainVector targetVectorPoint = new BrainVector(x2, y2);
-        BrainVector leadPoint = currentTargetPoint.calculateLeadPoint(targetVectorPoint, 0.01);
+        BrainVector leadPoint = currentTargetPoint.calculateLeadPoint(targetVectorPoint, 0.005);
 
         telemetry.addData("leadPoint X", leadPoint.getX());
         telemetry.addData("leadPoint Y", leadPoint.getY());
