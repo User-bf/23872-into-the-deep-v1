@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 @Config
 public class Lift implements Component {
     public static class Params {
-        public double liftKp = 0.2;
-        public double liftKi = 0.1;
+        public double liftKp = 0.05;
+        public double liftKi = 0.0;
         public double liftKd = 0.0;
 
         public int LEVEL_1_HEIGHT = 0;
@@ -31,7 +31,7 @@ public class Lift implements Component {
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
         liftController = new PIDController(PARAMS.liftKp, PARAMS.liftKi, PARAMS.liftKd);
         liftController.setInputBounds(0,4000);
-        liftController.setOutputBounds(-1.0,1.0);
+        liftController.setOutputBounds(-0.5,0.5);
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         liftState = LiftState.LEVEL_1;
@@ -110,6 +110,18 @@ public class Lift implements Component {
 
         selectState();
         setMotorPower(getControlPower());
+    }
+
+    public void setLevel1() {
+        liftState = LiftState.LEVEL_1;
+    }
+
+    public void setLevel2() {
+        liftState = LiftState.LEVEL_2;
+    }
+
+    public void setLevel3() {
+        liftState = LiftState.LEVEL_3;
     }
 
     @Override

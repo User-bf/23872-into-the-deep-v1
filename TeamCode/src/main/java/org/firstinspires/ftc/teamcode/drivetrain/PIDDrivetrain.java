@@ -36,15 +36,15 @@ public class PIDDrivetrain {
 
     public static class Params {
         public double forward_kP = 0.125;
-        public double forward_kI = 0.05;
+        public double forward_kI = 0.075;
         public double forward_kD = 0.02;
 
-        public double strafe_kP = 0.075;
-        public double strafe_kI = 0.05;
+        public double strafe_kP = 0.0125;
+        public double strafe_kI = 0.075;
         public double strafe_kD = 0.02;
 
-        public double head_kP = 0.05;
-        public double head_kI = 0.001;
+        public double head_kP = 0.075;
+        public double head_kI = 0.0025;
         public double head_kD = 0.0;
 
         public double kV = 0.1;
@@ -164,6 +164,12 @@ public class PIDDrivetrain {
         pathPoints.add(new PathPoint(pathPoint, displacementTolerance, headingTolerance));
     }
 
+    public void addPathPoint(Pose2D pathPoint, double displacementTolerance, double headingTolerance,
+                             double targetVelocity, double velocityTolerance) {
+        pathPoints.add(new PathPoint(pathPoint, displacementTolerance, headingTolerance,
+                targetVelocity, velocityTolerance));
+    }
+
     private void drawField() {
         Pose2d currentPose = new Pose2d(getCurrentX(), getCurrentY(), getCurrentHeadingRadians());
         TelemetryPacket packet = new TelemetryPacket();
@@ -188,7 +194,7 @@ public class PIDDrivetrain {
             return true;
         } else {
             PathPoint firstPathPoint = pathPoints.get(0);
-            if (firstPathPoint.inTolerance(currentPose)) {
+            if (firstPathPoint.inTolerance(currentPose, currentVelocity)) {
                 pathPoints.remove(0);
             }
 

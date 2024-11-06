@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -25,47 +28,81 @@ public class TeleOp extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            drive.updatePoseEstimate();
-            driveTrainControl(drive);
-
-            if(gamepad1.a) {
-                robot.lift.liftState = Lift.LiftState.LEVEL_1;
-            } else if (gamepad1.b) {
-                robot.lift.liftState = Lift.LiftState.LEVEL_2;
-            } else if (gamepad1.x) {
-                robot.lift.liftState = Lift.LiftState.LEVEL_3;
-            } else {
-                robot.lift.setMotorPower(0);
-            }
-
+            updateDrive(robot);
             robot.update();
+
+            updateDriver1(robot);
+            updateDriver2(robot);
+
             telemetry.update();
         }
     }
 
-    private void driveTrainControl(PIDDrivetrain drive) {
-        double rightStickX;
-        double leftStickX = gamepad1.left_stick_x;
-        double leftStickY = gamepad1.left_stick_y * -1;
-        double threshold = 0.2;
+    private void updateDriver1(BrainSTEMRobot robot) {
+        driver1LiftControls(robot);
+        driver1DepositorControls(robot);
+        driver1CollectorControls(robot);
+        driver1ExtensionControls(robot);
+    }
 
-        if (Math.abs(gamepad1.right_stick_x) > threshold) {
-            if (gamepad1.right_stick_x < 0)
-                rightStickX = gamepad1.right_stick_x * gamepad1.right_stick_x * -1 * (4.0 / 5.0) - (1.0 / 5.0);
-            else
-                rightStickX = gamepad1.right_stick_x * gamepad1.right_stick_x * (4.0 / 5.0) + (1.0 / 5.0);
-        } else
-            rightStickX = 0;
-
-        if ((Math.abs(gamepad1.left_stick_y) > threshold) || (Math.abs(gamepad1.left_stick_x) > threshold) || Math.abs(gamepad1.right_stick_x) > threshold) {
-            //Calculate formula for mecanum drive function
-            double addValue = (double) (Math.round((100 * (leftStickY * Math.abs(leftStickY) + leftStickX * Math.abs(leftStickX))))) / 100;
-            double subtractValue = (double) (Math.round((100 * (leftStickY * Math.abs(leftStickY) - leftStickX * Math.abs(leftStickX))))) / 100;
-
-            //Set motor speed variables
-            drive.setDrivePower((addValue + rightStickX)/1.05, (subtractValue + rightStickX)/1.05, (subtractValue - rightStickX)/1.05, (addValue - rightStickX)/1.05);
-        } else {
-            drive.stop();
+    private void driver1LiftControls(BrainSTEMRobot robot) {
+        if (gamepad1.dpad_up) {
+            robot.lift.setLevel2();
+        } else if (gamepad1.dpad_down) {
+            robot.lift.setLevel1();
         }
+    }
+
+    private void driver1ExtensionControls(BrainSTEMRobot robot) {
+        if (gamepad1.x) {
+            robot.extension.setOut();
+        } else if (gamepad1.y) {
+            robot.extension.setIn();
+        } else {
+            robot.extension.setOff();
+        }
+    }
+
+    private void driver1CollectorControls(BrainSTEMRobot robot) {
+        if (gamepad1.a) {
+            robot.collector.setIntake();
+        } else if (gamepad1.b) {
+            robot.collector.setEject();
+        } else {
+            robot.collector.setLevel();
+        }
+    }
+
+    private void driver1DepositorControls(BrainSTEMRobot robot) {
+        if (gamepad1.left_bumper) {
+            robot.depositor.setDepositorForward();
+        } else {
+            robot.depositor.setDepositorBackward();
+        }
+    }
+
+    private void updateDriver2(BrainSTEMRobot robot) {
+    }
+
+    private void drawRobot(BrainSTEMRobot robot) {
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.fieldOverlay().setStroke("#3F51B5");
+        Drawing.drawRobot(packet.fieldOverlay(), robot.drive.pose);
+        FtcDashboard.getInstance().sendTelemetryPacket(packet);
+    }
+
+    private void updateDrive(BrainSTEMRobot robot) {
+        robot.drive.setDrivePowers(new PoseVelocity2d(
+                new Vector2d(
+                        -gamepad1.left_stick_y,
+                        -gamepad1.left_stick_x
+                ),
+                -gamepad1.right_stick_x
+        ));
+
+        telemetry.addData("x", robot.drive.pose.position.x);
+        telemetry.addData("y", robot.drive.pose.position.y);
+        telemetry.addData("heading (deg)", Math.toDegrees(robot.drive.pose.heading.toDouble()));
+        drawRobot(robot);
     }
 }

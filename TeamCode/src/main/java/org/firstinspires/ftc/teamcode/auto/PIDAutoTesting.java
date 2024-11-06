@@ -19,16 +19,21 @@ public class PIDAutoTesting extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Pose2D initialPose = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
-        Pose2D targetPose = new Pose2D(DistanceUnit.INCH, 30, 0, AngleUnit.DEGREES, 0);
+        Pose2D initialPose = new Pose2D(DistanceUnit.INCH, -66, -30, AngleUnit.DEGREES, 0);
+        Pose2D approachPose1 = new Pose2D(DistanceUnit.INCH, 0, -45, AngleUnit.DEGREES, 0);
+        Pose2D targetPose1 = new Pose2D(DistanceUnit.INCH, -62, -48, AngleUnit.DEGREES, 0);
+        Pose2D approachPose2 = new Pose2D(DistanceUnit.INCH, 0, -52, AngleUnit.DEGREES, 0);
+        Pose2D targetPose2 = new Pose2D(DistanceUnit.INCH, -62, -52, AngleUnit.DEGREES, 0);
+
 
         PIDDrivetrain drive = new PIDDrivetrain(hardwareMap, telemetry, initialPose);
         drive.resetPosition(initialPose);
 
-        drive.addPathPoint(targetPose, 1.0, 2);
-        drive.addPathPoint(initialPose, 1.0, 2);
-        drive.addPathPoint(targetPose, 1.0, 2);
-        drive.addPathPoint(initialPose, 1.0, 2);
+        drive.addPathPoint(approachPose1, 2.0, 2, 0, 5);
+        drive.addPathPoint(targetPose1, 2.0, 2, 0, 5);
+        drive.addPathPoint(targetPose1, 2.0, 2, 0, 5);
+        drive.addPathPoint(approachPose2, 2.0, 2, 0,5);
+        drive.addPathPoint(targetPose2, 1.0, 2);
 
         telemetry.update();
 
