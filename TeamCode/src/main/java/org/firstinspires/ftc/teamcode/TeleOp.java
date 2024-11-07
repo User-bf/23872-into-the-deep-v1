@@ -79,6 +79,12 @@ public class TeleOp extends LinearOpMode {
         } else {
             robot.depositor.setDepositorBackward();
         }
+
+        if (gamepad1.right_bumper) {
+            robot.depositor.setGripperOpen();
+        } else {
+            robot.depositor.setGripperClosed();
+        }
     }
 
     private void updateDriver2(BrainSTEMRobot robot) {
