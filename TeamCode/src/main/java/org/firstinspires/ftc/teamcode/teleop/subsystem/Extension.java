@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teleop.subsystem;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -19,11 +20,20 @@ public class Extension implements Component {
 
     private AnalogInput eTrackerEncoder;
 
-    // PIDS Values
-    public double kP_Up = 0.05;//FIXME
-    public double kI_Up = 0.00; //FIXME
-    public double kD_Up = 0.000;//FIXME
-    public double kS= 0;
+    public static class Params {
+        // PIDS Values
+        public double kP_Up = 0.05;//FIXME
+        public double kI_Up = 0.00; //FIXME
+        public double kD_Up = 0.000;//FIXME
+        public double kS = 0;
+
+        public int TOLERANCE = 5;
+
+        public static final int EXTENSION_MAX = 500;
+        public static final int EXTENSION_IN = 0;
+        public int EXTENSION_CUSTOM = 200;
+        public static final int RETRACT_POSITION = 0;
+    }
 
     // some variables needed for class
     public double target = 0;
@@ -34,32 +44,36 @@ public class Extension implements Component {
     private int error = 0;
     // instantiating PIDController
     PIDController extensionController;
+    DigitalChannel extensionLimitSwitch;
 
     // Constants
-    private static final int EXTENTION_MAX = 20000;
-    private static final int EXTENSION_IN = 0;
-    private int EXTENSION_CUSTOM = 200;
 
+    public static Extension.Params PARAMS = new Extension.Params();
 
 
     // constructor for Extension class
     public Extension(HardwareMap hwMap, Telemetry telemetry) {
 
-        extensionController = new PIDController(kP_Up, kI_Up, kD_Up);
+        extensionController = new PIDController(PARAMS.kP_Up, PARAMS.kI_Up, PARAMS.kD_Up);
         this.telemetry = telemetry;
         this.map = hwMap;
 
-        extensionController.setInputBounds(EXTENSION_IN, EXTENTION_MAX);
+        extensionController.setInputBounds(PARAMS.EXTENSION_IN, PARAMS.EXTENSION_MAX);
         extensionController.setOutputBounds(-1.0, 1.0);
         extension = new CachingMotor(map.get(DcMotorEx.class, "extension"));
         extension.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         extension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        extensionLimitSwitch = hwMap.get(DigitalChannel.class, "eLimitSwitch");
     }
 
     // creating enums for Extension
     public enum ExtensionState {
-        OUT, IN, OFF, CUSTOM
+        OUT,
+        IN,
+        OFF,
+        CUSTOM,
+        RETRACT
     }
     // creating extensionState var
     public ExtensionState extensionState = ExtensionState.IN;
@@ -73,7 +87,7 @@ public class Extension implements Component {
         target = ticks;
         error = extension.getCurrentPosition() - ticks;
         if(!(Math.abs(error) <= 500)) {
-            power = extensionController.updateWithError(error) + kS;
+            power = extensionController.updateWithError(error) + PARAMS.kS;
         }
         else {
             power = 0;
@@ -92,21 +106,25 @@ public class Extension implements Component {
     }
 
     public void setIn(){
-        extensionState = extensionState.IN;
+        extensionState = extensionState.RETRACT;
     }
 
     public void setCustom(){extensionState = ExtensionState.CUSTOM;}
 
 
     public void incrementOut(){
-        EXTENSION_CUSTOM += 20;
+        PARAMS.EXTENSION_CUSTOM += 20;
     }
 
     public void incrementIn(){
-        EXTENSION_CUSTOM -= 20;
+        PARAMS.EXTENSION_CUSTOM -= 20;
     }
 
     public void setTelemetry() {}
+
+    public boolean inTolerance() {
+        return Math.abs(extension.getCurrentPosition() - extensionController.getTarget()) < PARAMS.TOLERANCE;
+    }
 
     // placeholder function
     @Override
@@ -114,16 +132,27 @@ public class Extension implements Component {
 
     }
 
-    // update function for setting the state to extension
-    @Override
-    public void update() {
+    public boolean isExtensionLimit() {
+        return !extensionLimitSwitch.getState();
+    }
+
+    private void setTarget(double target) {
+        extensionController.setTarget(target);
+    }
+
+    private void selectState() {
         switch (extensionState) {
             case OUT:
-                extension.setPower(1.0);
+                setTarget(PARAMS.EXTENSION_MAX);
                 break;
 
-            case IN:
-                extension.setPower(-1.0);
+            case RETRACT:
+                if (isExtensionLimit()) {
+                    extension.setPower(0);
+                    extension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                } else {
+                    setTarget(PARAMS.RETRACT_POSITION);
+                }
                 break;
 
             case OFF:
@@ -131,12 +160,29 @@ public class Extension implements Component {
                 break;
 
             case CUSTOM:
-                setExtensionPower(EXTENSION_CUSTOM);
+                setExtensionPower(PARAMS.EXTENSION_CUSTOM);
                 break;
         }
+    }
 
+    private double getControlPower() {
+        double pidPower = -extensionController.update(extension.getCurrentPosition());
+
+        return pidPower;
+    }
+
+    public void setMotorPower(double power) {
+        extension.setPower(power);
+    }
+
+    // update function for setting the state to extension
+    @Override
+    public void update() {
+        selectState();
+        setMotorPower(getControlPower());
         telemetry.addData("Extension Position", extension.getCurrentPosition());
         telemetry.addData("Extension Power", extension.getPower());
+        telemetry.addData("Extension Limit", isExtensionLimit());
     }
 
     public String test() {

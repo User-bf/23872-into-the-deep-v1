@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -12,13 +13,17 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 @Config
 public class Lift implements Component {
     public static class Params {
-        public double liftKp = 0.05;
-        public double liftKi = 0.0;
-        public double liftKd = 0.0;
+        public double liftKp = 0.02;
+        public double liftKi = 0.01;
+        public double liftKd = 0.0001;
 
-        public int LEVEL_1_HEIGHT = 0;
-        public int LEVEL_2_HEIGHT = 500;
-        public int LEVEL_3_HEIGHT = 1000;
+        public int BASE_HEIGHT = 5;
+        public int DECONFLICT_HEIGHT = 100;
+        public int GRAB_HEIGHT = 15;
+        public int LOW_BASKET_HEIGHT = 600;
+        public int HIGH_BASKET_HEIGHT = 1150;
+
+        public int TOLERANCE = 5;
     }
 
     PIDController liftController;
@@ -31,29 +36,27 @@ public class Lift implements Component {
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
         liftController = new PIDController(PARAMS.liftKp, PARAMS.liftKi, PARAMS.liftKd);
         liftController.setInputBounds(0,4000);
-        liftController.setOutputBounds(-0.5,0.5);
+        liftController.setOutputBounds(-0.1,1.0);
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
-        liftState = LiftState.LEVEL_1;
+        liftState = LiftState.DECONFLICT;
         liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor");
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-//        lEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "liftEncoder"));
     }
 
     public enum LiftState {
-        LEVEL_1,
-        LEVEL_2,
-        LEVEL_3,
-        RESET
+        BASE,
+        DECONFLICT,
+        LOW_BASKET,
+        HIGH_BASKET,
+        RESET,
+        GRAB
     }
 
     public void setMotorPower(double power) {
         liftMotor.setPower(power);
-        telemetry.addData("liftMotor Power", power);
     }
 
     @Override
@@ -67,25 +70,29 @@ public class Lift implements Component {
 
     private void selectState() {
         switch(liftState) {
-            case RESET: {
+            case RESET:
                 reset();
                 break;
-            }
 
-            case LEVEL_1: {
-                setTarget(PARAMS.LEVEL_1_HEIGHT);
+            case GRAB:
+                setTarget(PARAMS.GRAB_HEIGHT);
                 break;
-            }
 
-            case LEVEL_2: {
-                setTarget(PARAMS.LEVEL_2_HEIGHT);
+            case BASE:
+                setTarget(PARAMS.BASE_HEIGHT);
                 break;
-            }
 
-            case LEVEL_3: {
-                setTarget(PARAMS.LEVEL_3_HEIGHT);
+            case DECONFLICT:
+                setTarget(PARAMS.DECONFLICT_HEIGHT);
                 break;
-            }
+
+            case LOW_BASKET:
+                setTarget(PARAMS.LOW_BASKET_HEIGHT);
+                break;
+
+            case HIGH_BASKET:
+                setTarget(PARAMS.HIGH_BASKET_HEIGHT);
+                break;
         }
     }
 
@@ -112,16 +119,28 @@ public class Lift implements Component {
         setMotorPower(getControlPower());
     }
 
-    public void setLevel1() {
-        liftState = LiftState.LEVEL_1;
+    public void setBase() {
+        liftState = LiftState.BASE;
     }
 
-    public void setLevel2() {
-        liftState = LiftState.LEVEL_2;
+    public void setGrab() {
+        liftState = LiftState.GRAB;
     }
 
-    public void setLevel3() {
-        liftState = LiftState.LEVEL_3;
+    public void setDeconflict() {
+        liftState = LiftState.DECONFLICT;
+    }
+
+    public boolean inTolerance() {
+        return Math.abs(liftMotor.getCurrentPosition() - liftController.getTarget()) < PARAMS.TOLERANCE;
+    }
+
+    public void setLowBasket() {
+        liftState = LiftState.LOW_BASKET;
+    }
+
+    public void setHighBasket() {
+        liftState = LiftState.HIGH_BASKET;
     }
 
     @Override

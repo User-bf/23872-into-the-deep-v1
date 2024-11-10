@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.SparkFunOTOSDrive;
+import org.firstinspires.ftc.teamcode.drivetrain.SparkFunOTOSDrive;
 @TeleOp
 @Disabled
 public class OTOSPositionOffsetTuner extends LinearOpMode {

@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.StateMachine;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.PinpointDrive;
+import org.firstinspires.ftc.teamcode.drivetrain.PinpointDrive;
 import org.firstinspires.ftc.teamcode.teleop.subsystem.Collector;
 import org.firstinspires.ftc.teamcode.teleop.subsystem.Component;
 import org.firstinspires.ftc.teamcode.teleop.subsystem.Depositor;
@@ -48,5 +47,6 @@ public class BrainSTEMRobot {
             c.update();
         }
         drive.updatePoseEstimate();
+        CommandScheduler.getInstance().run();
     }
 }

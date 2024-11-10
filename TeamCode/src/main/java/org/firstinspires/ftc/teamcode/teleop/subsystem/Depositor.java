@@ -11,10 +11,17 @@ import org.firstinspires.ftc.teamcode.util.CachingServo;
 @Config
 public class Depositor implements Component {
     public static class Params {
-        double depositorForwardPosition = 0.99;
-        double depositorBackwardPosition = 0.01;
-        double gripperClosedPosition = 0.01;
-        double gripperOpenedPosition = 0.99;
+        double depositorForwardPosition = 0.89;
+        double depositorBackwardPosition = 0.095;
+        double depositorNeutralPosition = 0.5;
+        double gripperClosedPosition = 0.99;
+        double gripperOpenedPosition = 0.01;
+
+        public final static int GRIPPER_OPEN_TIME_MS = 250;
+        public final static int GRIPPER_CLOSE_TIME_MS = 250;
+
+        public final static int DEPOSITOR_FORWARD_TIME_MS = 250;
+        public final static int DEPOSITOR_BACK_TIME_MS = 250;
     }
 
     Telemetry telemetry;
@@ -32,9 +39,9 @@ public class Depositor implements Component {
         this.telemetry = telemetry;
         rotationServo = new CachingServo(hardwareMap.get(ServoImplEx.class, "depositorRotationServo"));
         gripperServo = new CachingServo(hardwareMap.get(ServoImplEx.class, "gripperServo"));
-        rotationServo.setPwmRange(new PwmControl.PwmRange(600, 2400));
+//        rotationServo.setPwmRange(new PwmControl.PwmRange(600, 2400));
         gripperServo.setPwmRange(new PwmControl.PwmRange(1200, 1800));
-        depositorState = DepositorState.DEPOSITOR_FORWARD;
+        depositorState = DepositorState.DEPOSITOR_BACKWARD;
         gripperState = GripperState.GRIPPER_OPEN;
     }
 
@@ -45,7 +52,8 @@ public class Depositor implements Component {
 
     public enum DepositorState {
         DEPOSITOR_FORWARD,
-        DEPOSITOR_BACKWARD
+        DEPOSITOR_BACKWARD,
+        DEPOSITOR_NEUTRAL
     }
 
     @Override
@@ -57,32 +65,39 @@ public class Depositor implements Component {
         return "true";
     }
 
-    @Override
-    public void update() {
-        switch (depositorState) {
-            case DEPOSITOR_FORWARD: {
-                moveDepositorForward();
-                break;
-            }
-
-            case DEPOSITOR_BACKWARD: {
-                moveDepositorBackward();
-                break;
-            }
-
-
-        }
-
+    private void selectGripperState() {
         switch (gripperState) {
-            case GRIPPER_CLOSED: {
+            case GRIPPER_CLOSED:
                 closeGripper();
                 break;
-            }
-            case GRIPPER_OPEN: {
+
+            case GRIPPER_OPEN:
                 openGripper();
                 break;
-            }
+
         }
+    }
+
+    private void selectDepositorState() {
+        switch (depositorState) {
+            case DEPOSITOR_FORWARD:
+                moveDepositorForward();
+                break;
+
+            case DEPOSITOR_BACKWARD:
+                moveDepositorBackward();
+                break;
+
+            case DEPOSITOR_NEUTRAL:
+                moveDepositorNeutral();
+                break;
+        }
+    }
+
+    @Override
+    public void update() {
+        selectGripperState();
+        selectDepositorState();
     }
 
     private void moveDepositorForward() {
@@ -93,12 +108,20 @@ public class Depositor implements Component {
         rotationServo.setPosition(PARAMS.depositorBackwardPosition);
     }
 
+    private void moveDepositorNeutral() {
+        rotationServo.setPosition(PARAMS.depositorNeutralPosition);
+    }
+
     public void setDepositorForward() {
         depositorState = DepositorState.DEPOSITOR_FORWARD;
     }
 
     public void setDepositorBackward() {
         depositorState = DepositorState.DEPOSITOR_BACKWARD;
+    }
+
+    public void setDepositorNeutral() {
+        depositorState = DepositorState.DEPOSITOR_NEUTRAL;
     }
 
     private void closeGripper() {

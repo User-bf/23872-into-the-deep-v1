@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -11,8 +11,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.drivetrain.PIDDrivetrain;
-import org.firstinspires.ftc.teamcode.teleop.BrainSTEMRobot;
-import org.firstinspires.ftc.teamcode.teleop.subsystem.Lift;
+import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositGripSequenceCommand;
+import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositReleaseSequenceCommand;
+import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperCloseCommand;
+import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperOpenCommand;
+import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftBaseCommand;
+import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftDeconflictCommand;
+import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftHighBasketCommand;
+import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftLowBasketCommand;
+import org.firstinspires.ftc.teamcode.util.Drawing;
 
 public class TeleOp extends LinearOpMode {
 
@@ -47,9 +54,9 @@ public class TeleOp extends LinearOpMode {
 
     private void driver1LiftControls(BrainSTEMRobot robot) {
         if (gamepad1.dpad_up) {
-            robot.lift.setLevel2();
+            new LiftHighBasketCommand(robot.lift, telemetry).schedule();
         } else if (gamepad1.dpad_down) {
-            robot.lift.setLevel1();
+            new LiftLowBasketCommand(robot.lift, telemetry).schedule();
         }
     }
 
@@ -74,17 +81,25 @@ public class TeleOp extends LinearOpMode {
     }
 
     private void driver1DepositorControls(BrainSTEMRobot robot) {
-        if (gamepad1.left_bumper) {
-            robot.depositor.setDepositorForward();
-        } else {
-            robot.depositor.setDepositorBackward();
+//        if (gamepad1.left_bumper) {
+//            robot.depositor.setDepositorForward();
+//        } else if (gamepad1.right_bumper) {
+//            robot.depositor.setDepositorNeutral();
+//        } else {
+//            robot.depositor.setDepositorBackward();
+//        }
+//
+        if (gamepad1.right_trigger > 0.5) {
+            new DepositReleaseSequenceCommand(robot, telemetry).schedule();
         }
+//        else {
+//            new GripperCloseCommand(robot.depositor, telemetry).schedule();
+//        }
 
         if (gamepad1.right_bumper) {
-            robot.depositor.setGripperOpen();
-        } else {
-            robot.depositor.setGripperClosed();
+            new DepositGripSequenceCommand(robot, telemetry).schedule();
         }
+
     }
 
     private void updateDriver2(BrainSTEMRobot robot) {
