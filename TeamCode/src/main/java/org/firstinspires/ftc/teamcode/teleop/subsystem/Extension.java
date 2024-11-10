@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.util.AbsoluteAnalogEncoder;
 import org.firstinspires.ftc.teamcode.util.CachingMotor;
 import org.firstinspires.ftc.teamcode.util.PIDController;
 
@@ -31,12 +30,12 @@ public class Extension implements Component {
 
         public static final int EXTENSION_MAX = 500;
         public static final int EXTENSION_IN = 0;
-        public int EXTENSION_CUSTOM = 200;
+        public int EXTENSION_CUSTOM = 20;
         public static final int RETRACT_POSITION = 0;
     }
 
     // some variables needed for class
-    public double target = 0;
+    public int target = 0;
 
 
     private double power = 0;
@@ -95,32 +94,20 @@ public class Extension implements Component {
         extension.setPower(-power);
     }
 
-
-//     setting the extension state to off
-    public void setOff(){
-        extensionState = extensionState.OFF;
-    }
-
-    public void setOut(){
-        extensionState = extensionState.OUT;
-    }
-
-    public void setIn(){
+    public void setRetract(){
         extensionState = extensionState.RETRACT;
     }
 
     public void setCustom(){extensionState = ExtensionState.CUSTOM;}
 
 
-    public void incrementOut(){
-        PARAMS.EXTENSION_CUSTOM += 20;
+    public void incrementOut(){ target += PARAMS.EXTENSION_CUSTOM;
     }
 
     public void incrementIn(){
-        PARAMS.EXTENSION_CUSTOM -= 20;
+        target -= PARAMS.EXTENSION_CUSTOM;
     }
 
-    public void setTelemetry() {}
 
     public boolean inTolerance() {
         return Math.abs(extension.getCurrentPosition() - extensionController.getTarget()) < PARAMS.TOLERANCE;
@@ -160,10 +147,11 @@ public class Extension implements Component {
                 break;
 
             case CUSTOM:
-                setExtensionPower(PARAMS.EXTENSION_CUSTOM);
+                setTarget(target);
                 break;
         }
     }
+
 
     private double getControlPower() {
         double pidPower = -extensionController.update(extension.getCurrentPosition());

@@ -13,10 +13,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.drivetrain.PIDDrivetrain;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositGripSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositReleaseSequenceCommand;
-import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperCloseCommand;
-import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperOpenCommand;
-import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftBaseCommand;
-import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftDeconflictCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftHighBasketCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftLowBasketCommand;
 import org.firstinspires.ftc.teamcode.util.Drawing;
@@ -50,6 +46,21 @@ public class TeleOp extends LinearOpMode {
         driver1DepositorControls(robot);
         driver1CollectorControls(robot);
         driver1ExtensionControls(robot);
+        driver2ExtensionControls(robot);
+    }
+
+    private void driver2ExtensionControls(BrainSTEMRobot robot) {
+        if (gamepad2.dpad_up) {
+            robot.extension.setCustom();
+            robot.extension.incrementOut();
+        } else if (gamepad2.dpad_down) {
+            robot.extension.setCustom();
+            robot.extension.incrementIn();
+        }
+
+        if (gamepad2.a) {
+            robot.extension.setRetract();
+        }
     }
 
     private void driver1LiftControls(BrainSTEMRobot robot) {
@@ -61,13 +72,6 @@ public class TeleOp extends LinearOpMode {
     }
 
     private void driver1ExtensionControls(BrainSTEMRobot robot) {
-        if (gamepad1.x) {
-            robot.extension.setOut();
-        } else if (gamepad1.y) {
-            robot.extension.setIn();
-        } else {
-            robot.extension.setOff();
-        }
     }
 
     private void driver1CollectorControls(BrainSTEMRobot robot) {

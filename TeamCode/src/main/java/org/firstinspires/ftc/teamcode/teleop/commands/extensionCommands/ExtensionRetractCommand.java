@@ -17,7 +17,7 @@ public class ExtensionRetractCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        extension.setIn();
+        extension.setRetract();
     }
     public void execute(){
 
