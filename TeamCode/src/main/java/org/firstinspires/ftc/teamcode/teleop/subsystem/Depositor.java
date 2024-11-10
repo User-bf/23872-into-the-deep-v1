@@ -14,15 +14,18 @@ public class Depositor implements Component {
         public double depositorForwardPosition = 0.89;
         public double depositorBackwardPosition = 0.375;
         public double depositorDownPosition = 0.08;
+        public double depositorUpPosition = 0.65;
         public double depositorNeutralPosition = 0.5;
         public double gripperClosedPosition = 0.99;
         public double gripperOpenedPosition = 0.01;
 
         public final static int GRIPPER_OPEN_TIME_MS = 250;
-        public final static int GRIPPER_CLOSE_TIME_MS = 250;
+        public final static int GRIPPER_CLOSE_TIME_MS = 300;
 
         public final static int DEPOSITOR_FORWARD_TIME_MS = 250;
         public final static int DEPOSITOR_BACK_TIME_MS = 250;
+        public final static int DEPOSITOR_UP_TIME_MS = 400;
+        public final static int DEPOSITOR_DOWN_TIME_MS = 400;
     }
 
     Telemetry telemetry;
@@ -40,7 +43,7 @@ public class Depositor implements Component {
         this.telemetry = telemetry;
         rotationServo = new CachingServo(hardwareMap.get(ServoImplEx.class, "depositorRotationServo"));
         gripperServo = new CachingServo(hardwareMap.get(ServoImplEx.class, "gripperServo"));
-        gripperServo.setPwmRange(new PwmControl.PwmRange(1200, 1800));
+        gripperServo.setPwmRange(new PwmControl.PwmRange(1200, 2000));
         depositorState = DepositorState.DEPOSITOR_DOWN;
         gripperState = GripperState.GRIPPER_OPEN;
     }
@@ -54,7 +57,8 @@ public class Depositor implements Component {
         DEPOSITOR_FORWARD,
         DEPOSITOR_BACKWARD,
         DEPOSITOR_NEUTRAL,
-        DEPOSITOR_DOWN
+        DEPOSITOR_DOWN,
+        DEPOSITOR_UP
     }
 
     @Override
@@ -89,6 +93,10 @@ public class Depositor implements Component {
                 moveDepositorDown();
                 break;
 
+            case DEPOSITOR_UP:
+                moveDepositorUp();
+                break;
+
             case DEPOSITOR_BACKWARD:
                 moveDepositorBackward();
                 break;
@@ -116,6 +124,9 @@ public class Depositor implements Component {
     private void moveDepositorDown() {
         rotationServo.setPosition(PARAMS.depositorDownPosition);
     }
+    private void moveDepositorUp() {
+        rotationServo.setPosition(PARAMS.depositorUpPosition);
+    }
 
     private void moveDepositorNeutral() {
         rotationServo.setPosition(PARAMS.depositorNeutralPosition);
@@ -131,6 +142,9 @@ public class Depositor implements Component {
 
     public void setDepositorDown() {
         depositorState = DepositorState.DEPOSITOR_DOWN;
+    }
+    public void setDepositorUp() {
+        depositorState = DepositorState.DEPOSITOR_UP;
     }
 
     public void setDepositorNeutral() {

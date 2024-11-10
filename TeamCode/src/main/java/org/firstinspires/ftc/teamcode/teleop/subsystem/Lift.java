@@ -18,12 +18,12 @@ public class Lift implements Component {
         public double liftKd = 0.0001;
 
         public int BASE_HEIGHT = 5;
-        public int DECONFLICT_HEIGHT = 80;
-        public int GRAB_HEIGHT = 15;
+        public int DECONFLICT_HEIGHT = 110;
+        public int GRAB_HEIGHT = 10;
         public int LOW_BASKET_HEIGHT = 600;
         public int HIGH_BASKET_HEIGHT = 1150;
 
-        public int TOLERANCE = 5;
+        public int TOLERANCE = 10;
     }
 
     PIDController liftController;

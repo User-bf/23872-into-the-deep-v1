@@ -6,21 +6,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.teleop.subsystem.Depositor;
 
-public class DepositorDownCommand extends CommandBase {
+public class DepositorUpCommand extends CommandBase {
     Depositor depositor;
     Telemetry telemetry;
     ElapsedTime timer = new ElapsedTime();
 
 
 
-    public DepositorDownCommand(Depositor depositor, Telemetry telemetry) {
+    public DepositorUpCommand(Depositor depositor, Telemetry telemetry) {
         this.telemetry = telemetry;
         this.depositor = depositor;
     }
 
     @Override
     public void initialize() {
-        depositor.setDepositorDown();
+        depositor.setDepositorUp();
         timer.reset();
     }
 
@@ -30,6 +30,6 @@ public class DepositorDownCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return timer.milliseconds() > Depositor.Params.DEPOSITOR_DOWN_TIME_MS;
+        return timer.milliseconds() > Depositor.Params.DEPOSITOR_UP_TIME_MS;
     }
 }

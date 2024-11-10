@@ -47,6 +47,7 @@ public class TeleOp extends LinearOpMode {
         driver1CollectorControls(robot);
         driver1ExtensionControls(robot);
         driver2ExtensionControls(robot);
+        driver2CollectorControls(robot);
     }
 
     private void driver2ExtensionControls(BrainSTEMRobot robot) {
@@ -60,6 +61,14 @@ public class TeleOp extends LinearOpMode {
 
         if (gamepad2.a) {
             robot.extension.setRetract();
+        }
+    }
+
+    private void driver2CollectorControls(BrainSTEMRobot robot) {
+        if (gamepad2.right_trigger > 0) {
+            robot.collector.setIntake();
+        } else {
+            robot.collector.setLevel();
         }
     }
 
