@@ -13,7 +13,7 @@ public class Depositor implements Component {
     public static class Params {
         public double depositorForwardPosition = 0.89;
         public double depositorBackwardPosition = 0.375;
-        public double depositorDownPosition = 0.095;
+        public double depositorDownPosition = 0.08;
         public double depositorNeutralPosition = 0.5;
         public double gripperClosedPosition = 0.99;
         public double gripperOpenedPosition = 0.01;
