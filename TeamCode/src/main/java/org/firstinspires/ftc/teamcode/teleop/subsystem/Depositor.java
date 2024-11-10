@@ -11,11 +11,12 @@ import org.firstinspires.ftc.teamcode.util.CachingServo;
 @Config
 public class Depositor implements Component {
     public static class Params {
-        double depositorForwardPosition = 0.89;
-        double depositorBackwardPosition = 0.095;
-        double depositorNeutralPosition = 0.5;
-        double gripperClosedPosition = 0.99;
-        double gripperOpenedPosition = 0.01;
+        public double depositorForwardPosition = 0.89;
+        public double depositorBackwardPosition = 0.375;
+        public double depositorDownPosition = 0.095;
+        public double depositorNeutralPosition = 0.5;
+        public double gripperClosedPosition = 0.99;
+        public double gripperOpenedPosition = 0.01;
 
         public final static int GRIPPER_OPEN_TIME_MS = 250;
         public final static int GRIPPER_CLOSE_TIME_MS = 250;
@@ -39,9 +40,8 @@ public class Depositor implements Component {
         this.telemetry = telemetry;
         rotationServo = new CachingServo(hardwareMap.get(ServoImplEx.class, "depositorRotationServo"));
         gripperServo = new CachingServo(hardwareMap.get(ServoImplEx.class, "gripperServo"));
-//        rotationServo.setPwmRange(new PwmControl.PwmRange(600, 2400));
         gripperServo.setPwmRange(new PwmControl.PwmRange(1200, 1800));
-        depositorState = DepositorState.DEPOSITOR_BACKWARD;
+        depositorState = DepositorState.DEPOSITOR_DOWN;
         gripperState = GripperState.GRIPPER_OPEN;
     }
 
@@ -53,7 +53,8 @@ public class Depositor implements Component {
     public enum DepositorState {
         DEPOSITOR_FORWARD,
         DEPOSITOR_BACKWARD,
-        DEPOSITOR_NEUTRAL
+        DEPOSITOR_NEUTRAL,
+        DEPOSITOR_DOWN
     }
 
     @Override
@@ -84,6 +85,10 @@ public class Depositor implements Component {
                 moveDepositorForward();
                 break;
 
+            case DEPOSITOR_DOWN:
+                moveDepositorDown();
+                break;
+
             case DEPOSITOR_BACKWARD:
                 moveDepositorBackward();
                 break;
@@ -108,6 +113,10 @@ public class Depositor implements Component {
         rotationServo.setPosition(PARAMS.depositorBackwardPosition);
     }
 
+    private void moveDepositorDown() {
+        rotationServo.setPosition(PARAMS.depositorDownPosition);
+    }
+
     private void moveDepositorNeutral() {
         rotationServo.setPosition(PARAMS.depositorNeutralPosition);
     }
@@ -118,6 +127,10 @@ public class Depositor implements Component {
 
     public void setDepositorBackward() {
         depositorState = DepositorState.DEPOSITOR_BACKWARD;
+    }
+
+    public void setDepositorDown() {
+        depositorState = DepositorState.DEPOSITOR_DOWN;
     }
 
     public void setDepositorNeutral() {

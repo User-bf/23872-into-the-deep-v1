@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.teleop.BrainSTEMRobot;
+import org.firstinspires.ftc.teamcode.teleop.commands.depositorCommands.DepositorBackCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.depositorCommands.DepositorForwardCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperCloseCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperOpenCommand;
@@ -20,7 +21,7 @@ public class DepositGripSequenceCommand extends SequentialCommandGroup {
                 new LiftGrabCommand(robot.lift, telemetry),
                 new GripperCloseCommand(robot.depositor, telemetry),
                 new LiftDeconflictCommand(robot.lift, telemetry),
-                new DepositorForwardCommand(robot.depositor, telemetry)
+                new DepositorBackCommand(robot.depositor, telemetry)
         );
     }
 }
