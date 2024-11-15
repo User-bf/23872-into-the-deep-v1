@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.drivetrain.PIDDrivetrain;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositGripSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositReleaseSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.GrabSpecimenSequenceCommand;
+import org.firstinspires.ftc.teamcode.teleop.commandGroups.SpecimenPreDeposit;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftHighBasketCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftLowBasketCommand;
 import org.firstinspires.ftc.teamcode.util.Drawing;
@@ -56,6 +57,9 @@ public class TeleOp extends LinearOpMode {
     private void driver2LiftControls(BrainSTEMRobot robot) {
         if(gamepad2.left_trigger > 0.5) {
             new GrabSpecimenSequenceCommand(robot, telemetry).schedule();
+        }
+        else if (gamepad2.right_trigger > 0.5) {
+            new SpecimenPreDeposit(robot, telemetry).schedule();
         }
 
     }

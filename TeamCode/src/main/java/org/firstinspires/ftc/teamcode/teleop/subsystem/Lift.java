@@ -13,17 +13,18 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 @Config
 public class Lift implements Component {
     public static class Params {
+        ;
         public double liftKp = 0.02;
         public double liftKi = 0.01;
         public double liftKd = 0.0001;
 
         public int BASE_HEIGHT = 5;
-        public int DECONFLICT_HEIGHT = 110;
+        public int DECONFLICT_HEIGHT = 200;
         public int GRAB_HEIGHT = 10;
         public int LOW_BASKET_HEIGHT = 600;
         public int HIGH_BASKET_HEIGHT = 1150;
-        public int SPECIMEN_LEVEL_HEIGHT = 85;
-
+        public int SPECIMEN_LEVEL_HEIGHT = 125;
+        public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
         public int TOLERANCE = 10;
     }
 
@@ -55,6 +56,7 @@ public class Lift implements Component {
         HIGH_BASKET,
         RESET,
         GRAB,
+        LIFT_SPECIMEN_PRE_DEPOSIT,
         SPECIMEN_LEVEL
     }
 
@@ -99,6 +101,10 @@ public class Lift implements Component {
 
             case SPECIMEN_LEVEL:
                 setTarget(PARAMS.SPECIMEN_LEVEL_HEIGHT);
+                break;
+
+            case LIFT_SPECIMEN_PRE_DEPOSIT:
+                setTarget(PARAMS.LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT);
                 break;
         }
     }
@@ -158,5 +164,9 @@ public class Lift implements Component {
 
     public void setSpecimenLevel() {
         liftState = LiftState.SPECIMEN_LEVEL;
+    }
+
+    public void setSpecimenPreDeposit() {
+        liftState = liftState.LIFT_SPECIMEN_PRE_DEPOSIT;
     }
 }
