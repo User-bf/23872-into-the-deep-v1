@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.drivetrain.PIDDrivetrain;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositGripSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositReleaseSequenceCommand;
+import org.firstinspires.ftc.teamcode.teleop.commandGroups.GrabSpecimenSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftHighBasketCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftLowBasketCommand;
 import org.firstinspires.ftc.teamcode.util.Drawing;
@@ -36,7 +37,8 @@ public class TeleOp extends LinearOpMode {
 
             updateDriver1(robot);
             updateDriver2(robot);
-
+            telemetry.addData("Collector Power", robot.collector.getPower());
+            telemetry.addData("Collector State", robot.collector.getState());
             telemetry.update();
         }
     }
@@ -47,9 +49,16 @@ public class TeleOp extends LinearOpMode {
         driver1CollectorControls(robot);
         driver1ExtensionControls(robot);
         driver2ExtensionControls(robot);
-        driver2CollectorControls(robot);
+       // driver2CollectorControls(robot);
+        driver2LiftControls(robot);
     }
 
+    private void driver2LiftControls(BrainSTEMRobot robot) {
+        if(gamepad2.left_trigger > 0.5) {
+            new GrabSpecimenSequenceCommand(robot, telemetry).schedule();
+        }
+
+    }
     private void driver2ExtensionControls(BrainSTEMRobot robot) {
         if (gamepad2.dpad_up) {
             robot.extension.setCustom();
@@ -62,15 +71,14 @@ public class TeleOp extends LinearOpMode {
         if (gamepad2.a) {
             robot.extension.setRetract();
         }
+
     }
 
-    private void driver2CollectorControls(BrainSTEMRobot robot) {
-        if (gamepad2.right_trigger > 0) {
-            robot.collector.setIntake();
-        } else {
-            robot.collector.setLevel();
-        }
-    }
+//    private void driver2CollectorControls(BrainSTEMRobot robot) {
+//        if (gamepad2.right_trigger > 0) {
+//            robot.collector.setIntake();
+//        }
+//    }
 
     private void driver1LiftControls(BrainSTEMRobot robot) {
         if (gamepad1.dpad_up) {
@@ -88,7 +96,8 @@ public class TeleOp extends LinearOpMode {
             robot.collector.setIntake();
         } else if (gamepad1.b) {
             robot.collector.setEject();
-        } else {
+        }
+        else {
             robot.collector.setLevel();
         }
     }

@@ -59,12 +59,18 @@ public class Collector implements Component {
             }
 
             case EJECT: {
-                colletorOut();
+                collectorOut();
                 break;
             }
         }
     }
 
+    public double getPower(){
+        return collectorMotor.getPower();
+    }
+    public CollectorState getState(){
+        return collectorState;
+    }
     private void collectorLevel() {
         collectorMotor.setPower(0.0);
     }
@@ -73,8 +79,8 @@ public class Collector implements Component {
         collectorMotor.setPower(1.0);
     }
 
-    private void colletorOut() {
-        collectorMotor.setPower(-1.0);
+    private void collectorOut() {
+        collectorMotor.setPower(-0.99);
     }
 
     public void setIntake() {

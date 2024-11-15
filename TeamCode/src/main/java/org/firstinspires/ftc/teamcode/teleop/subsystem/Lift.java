@@ -22,6 +22,7 @@ public class Lift implements Component {
         public int GRAB_HEIGHT = 10;
         public int LOW_BASKET_HEIGHT = 600;
         public int HIGH_BASKET_HEIGHT = 1150;
+        public int SPECIMEN_LEVEL_HEIGHT = 85;
 
         public int TOLERANCE = 10;
     }
@@ -35,11 +36,12 @@ public class Lift implements Component {
 
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
         liftController = new PIDController(PARAMS.liftKp, PARAMS.liftKi, PARAMS.liftKd);
-        liftController.setInputBounds(0,4000);
-        liftController.setOutputBounds(-0.1,1.0);
+        liftController.setInputBounds(0, 4000);
+        liftController.setOutputBounds(-0.1, 0.99);
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         liftState = LiftState.DECONFLICT;
+        ///liftState = LiftState.SPECIMEN_LEVEL;
         liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor");
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -52,7 +54,8 @@ public class Lift implements Component {
         LOW_BASKET,
         HIGH_BASKET,
         RESET,
-        GRAB
+        GRAB,
+        SPECIMEN_LEVEL
     }
 
     public void setMotorPower(double power) {
@@ -69,7 +72,7 @@ public class Lift implements Component {
     }
 
     private void selectState() {
-        switch(liftState) {
+        switch (liftState) {
             case RESET:
                 reset();
                 break;
@@ -93,6 +96,10 @@ public class Lift implements Component {
             case HIGH_BASKET:
                 setTarget(PARAMS.HIGH_BASKET_HEIGHT);
                 break;
+
+            case SPECIMEN_LEVEL:
+                setTarget(PARAMS.SPECIMEN_LEVEL_HEIGHT);
+                break;
         }
     }
 
@@ -114,6 +121,7 @@ public class Lift implements Component {
     public void update() {
         telemetry.addData("liftController Target", liftController.getTarget());
         telemetry.addData("liftMotor Position", liftMotor.getCurrentPosition());
+        telemetry.addData("Lift State", liftState);
 
         selectState();
         setMotorPower(getControlPower());
@@ -145,6 +153,10 @@ public class Lift implements Component {
 
     @Override
     public String test() {
-       return "Complete";
+        return "Complete";
+    }
+
+    public void setSpecimenLevel() {
+        liftState = LiftState.SPECIMEN_LEVEL;
     }
 }
