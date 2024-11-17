@@ -18,13 +18,14 @@ public class Lift implements Component {
         public double liftKi = 0.01;
         public double liftKd = 0.0001;
 
-        public int BASE_HEIGHT = 5;
+        public int BASE_HEIGHT = 25;
         public int DECONFLICT_HEIGHT = 200;
-        public int GRAB_HEIGHT = 10;
+        public int GRAB_HEIGHT = 70;
         public int LOW_BASKET_HEIGHT = 600;
         public int HIGH_BASKET_HEIGHT = 1150;
         public int SPECIMEN_LEVEL_HEIGHT = 125;
         public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
+        public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 500;
         public int TOLERANCE = 10;
     }
 
@@ -57,6 +58,7 @@ public class Lift implements Component {
         RESET,
         GRAB,
         LIFT_SPECIMEN_PRE_DEPOSIT,
+        LIFT_SPECIMEN_HIGH_BAR,
         SPECIMEN_LEVEL
     }
 
@@ -105,6 +107,11 @@ public class Lift implements Component {
 
             case LIFT_SPECIMEN_PRE_DEPOSIT:
                 setTarget(PARAMS.LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT);
+                break;
+
+
+            case LIFT_SPECIMEN_HIGH_BAR:
+                setTarget(PARAMS.LIFT_SPECIMEN_HIGH_BAR_HEIGHT);
                 break;
         }
     }
@@ -169,4 +176,6 @@ public class Lift implements Component {
     public void setSpecimenPreDeposit() {
         liftState = liftState.LIFT_SPECIMEN_PRE_DEPOSIT;
     }
+
+    public void setLiftSpecimenHighBar() { liftState = liftState.LIFT_SPECIMEN_HIGH_BAR;}
 }

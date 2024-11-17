@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.drivetrain.PIDDrivetrain;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositGripSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositReleaseSequenceCommand;
+import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositSpecimenHighBarSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.GrabSpecimenSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.SpecimenPreDeposit;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftHighBasketCommand;
@@ -90,6 +91,8 @@ public class TeleOp extends LinearOpMode {
         } else if (gamepad1.dpad_down) {
             new LiftLowBasketCommand(robot.lift, telemetry).schedule();
         }
+        if (gamepad1.dpad_right)
+            new DepositSpecimenHighBarSequenceCommand(robot, telemetry).schedule();
     }
 
     private void driver1ExtensionControls(BrainSTEMRobot robot) {
