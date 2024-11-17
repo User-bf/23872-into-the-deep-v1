@@ -18,6 +18,8 @@ public class Depositor implements Component {
         public double depositorNeutralPosition = 0.5;
         public double gripperClosedPosition = 0.99;
         public double gripperOpenedPosition = 0.01;
+        public double gripperLowerPWM = 1200;
+        public double gripperUpperPWM = 2000;
 
         public final static int GRIPPER_OPEN_TIME_MS = 250;
         public final static int GRIPPER_CLOSE_TIME_MS = 300;
@@ -43,7 +45,7 @@ public class Depositor implements Component {
         this.telemetry = telemetry;
         rotationServo = new CachingServo(hardwareMap.get(ServoImplEx.class, "depositorRotationServo"));
         gripperServo = new CachingServo(hardwareMap.get(ServoImplEx.class, "gripperServo"));
-        gripperServo.setPwmRange(new PwmControl.PwmRange(1200, 2000));
+        gripperServo.setPwmRange(new PwmControl.PwmRange(PARAMS.gripperLowerPWM, PARAMS.gripperUpperPWM));
         depositorState = DepositorState.DEPOSITOR_DOWN;
         gripperState = GripperState.GRIPPER_OPEN;
     }
