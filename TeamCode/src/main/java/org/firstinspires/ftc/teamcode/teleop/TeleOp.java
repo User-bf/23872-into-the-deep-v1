@@ -63,6 +63,10 @@ public class TeleOp extends LinearOpMode {
             new SpecimenPreDeposit(robot, telemetry).schedule();
         }
 
+        if(gamepad2.y) {
+            new DepositSpecimenHighBarSequenceCommand(robot,telemetry).schedule();
+        }
+
     }
     private void driver2ExtensionControls(BrainSTEMRobot robot) {
         if (gamepad2.dpad_up) {

@@ -15,9 +15,9 @@ import org.firstinspires.ftc.teamcode.drivetrain.PinpointDrive;
 public class RedSideYellowBlocks extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(-36, -60, Math.PI/2);
-        Pose2d rightBlockApproachPose = new Pose2d(-40, -12, Math.PI/2);
-        Pose2d rightBlockMovePose = new Pose2d(-60, -60, -Math.PI/2);
+        Pose2d beginPose = new Pose2d(-48, -48, Math.toRadians(180));
+        Pose2d initialBlockDepositPose = new Pose2d(-51.5, -43, Math.toRadians(180));
+        Pose2d collectRightBlockPose = new Pose2d(-46, -40, Math.toRadians(90));
         PinpointDrive drive = new PinpointDrive(hardwareMap, beginPose);
 
 //        Action rightBlockApproach = drive.actionBuilder(beginPose)
@@ -29,9 +29,9 @@ public class RedSideYellowBlocks extends LinearOpMode {
 //                .build();
 
         TrajectoryActionBuilder rightBlock = drive.actionBuilder(beginPose)
-                        .splineTo(rightBlockApproachPose.position, Math.PI/2)
-                        .splineTo(rightBlockMovePose.position, -Math.PI/2);
-
+                        .splineTo(initialBlockDepositPose.position, Math.toRadians(180))
+                        .turn(90)
+                        .splineTo(collectRightBlockPose.position, Math.toRadians(90));
         Action trajectory = rightBlock.build();
 
         waitForStart();

@@ -20,20 +20,21 @@ public class Lift implements Component {
 
         public int BASE_HEIGHT = 25;
         public int DECONFLICT_HEIGHT = 200;
-        public int GRAB_HEIGHT = 70;
+        public int GRAB_HEIGHT = 23;
         public int LOW_BASKET_HEIGHT = 600;
-        public int HIGH_BASKET_HEIGHT = 1150;
-        public int SPECIMEN_LEVEL_HEIGHT = 125;
+        public int HIGH_BASKET_HEIGHT = 1200;
+        public int SPECIMEN_LEVEL_HEIGHT = 95;
         public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
         public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 500;
-        public int TOLERANCE = 10;
+        public int HIGH_BAR_HEIGHT = 800;
+        public int TOLERANCE = 20;
     }
 
     PIDController liftController;
     Telemetry telemetry;
     HardwareMap hardwareMap;
     public static Params PARAMS = new Params();
-    DcMotorEx liftMotor;
+    public DcMotorEx liftMotor;
     public LiftState liftState;
 
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -59,6 +60,7 @@ public class Lift implements Component {
         GRAB,
         LIFT_SPECIMEN_PRE_DEPOSIT,
         LIFT_SPECIMEN_HIGH_BAR,
+        HIGH_BAR,
         SPECIMEN_LEVEL
     }
 
@@ -112,6 +114,10 @@ public class Lift implements Component {
 
             case LIFT_SPECIMEN_HIGH_BAR:
                 setTarget(PARAMS.LIFT_SPECIMEN_HIGH_BAR_HEIGHT);
+                break;
+
+            case HIGH_BAR:
+                setTarget(PARAMS.HIGH_BAR_HEIGHT);
                 break;
         }
     }
@@ -177,5 +183,11 @@ public class Lift implements Component {
         liftState = liftState.LIFT_SPECIMEN_PRE_DEPOSIT;
     }
 
-    public void setLiftSpecimenHighBar() { liftState = liftState.LIFT_SPECIMEN_HIGH_BAR;}
+    public void setLiftSpecimenHighBar() {
+        liftState = liftState.LIFT_SPECIMEN_HIGH_BAR;
+    }
+
+    public void setHighBar() {
+        liftState = liftState.HIGH_BAR;
+    }
 }

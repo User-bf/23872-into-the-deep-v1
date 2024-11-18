@@ -15,17 +15,17 @@ import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftDeconflic
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftGrabCommand;
 import org.firstinspires.ftc.teamcode.teleop.subsystem.Lift;
 
-public class LiftSpecimenPreDeposit extends CommandBase{
+public class HighBarCommand extends CommandBase{
     Lift lift;
     Telemetry telemetry;
 
-    public LiftSpecimenPreDeposit(Lift lift, Telemetry telemetry) {
+    public HighBarCommand(Lift lift, Telemetry telemetry) {
         this.telemetry = telemetry;
         this.lift = lift;
     }
 
     public void initialize() {
-        lift.setSpecimenPreDeposit();
+        lift.setHighBar();
     }
 
     public void execute () {
