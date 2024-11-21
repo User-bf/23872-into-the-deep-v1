@@ -55,6 +55,13 @@ public class TeleOp extends LinearOpMode {
         driver2LiftControls(robot);
     }
 
+    private void driver2ExtensionControls(BrainSTEMRobot robot) {
+    }
+
+    private void driver1ExtensionControls(BrainSTEMRobot robot) {
+        
+    }
+
     private void driver2LiftControls(BrainSTEMRobot robot) {
         if(gamepad2.left_trigger > 0.5) {
             new GrabSpecimenSequenceCommand(robot, telemetry).schedule();
@@ -68,7 +75,7 @@ public class TeleOp extends LinearOpMode {
         }
 
     }
-    private void driver2ExtensionControls(BrainSTEMRobot robot) {
+    private void drive1ExtensionControls(BrainSTEMRobot robot) {
         if (gamepad1.dpad_up) {
             robot.extension.setCustom();
             robot.extension.incrementOut();
@@ -77,7 +84,7 @@ public class TeleOp extends LinearOpMode {
             robot.extension.incrementIn();
         }
 
-        if (gamepad1.a) {
+        if (gamepad1.x) {
             robot.extension.setRetract();
         }
 
@@ -97,9 +104,6 @@ public class TeleOp extends LinearOpMode {
         }
         if (gamepad2.dpad_right)
             new DepositSpecimenHighBarSequenceCommand(robot, telemetry).schedule();
-    }
-
-    private void driver1ExtensionControls(BrainSTEMRobot robot) {
     }
 
     private void driver1CollectorControls(BrainSTEMRobot robot) {
