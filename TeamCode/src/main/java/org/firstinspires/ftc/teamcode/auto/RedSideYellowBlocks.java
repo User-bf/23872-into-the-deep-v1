@@ -16,8 +16,8 @@ public class RedSideYellowBlocks extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d beginPose = new Pose2d(-48, -48, Math.toRadians(180));
-        Pose2d initialBlockDepositPose = new Pose2d(-51.5, -43, Math.toRadians(180));
-        Pose2d collectRightBlockPose = new Pose2d(-46, -40, Math.toRadians(90));
+        Pose2d initialBlockDepositPose = new Pose2d(-59.5, -43, Math.toRadians(180));
+        Pose2d collectRightBlockPose = new Pose2d(-59.5, -43, Math.toRadians(180));
         PinpointDrive drive = new PinpointDrive(hardwareMap, beginPose);
 
 //        Action rightBlockApproach = drive.actionBuilder(beginPose)
@@ -29,9 +29,11 @@ public class RedSideYellowBlocks extends LinearOpMode {
 //                .build();
 
         TrajectoryActionBuilder rightBlock = drive.actionBuilder(beginPose)
-                        .splineTo(initialBlockDepositPose.position, Math.toRadians(180))
-                        .turn(90)
-                        .splineTo(collectRightBlockPose.position, Math.toRadians(90));
+               /// .setTangent(Math.toRadians(180))
+                        .splineTo(initialBlockDepositPose.position, Math.toRadians(90))
+//                        .turn(89)
+                        .splineTo(collectRightBlockPose.position, Math.toRadians(180));
+
         Action trajectory = rightBlock.build();
 
         waitForStart();

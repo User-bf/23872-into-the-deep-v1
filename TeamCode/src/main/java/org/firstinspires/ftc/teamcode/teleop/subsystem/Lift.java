@@ -27,7 +27,7 @@ public class Lift implements Component {
         public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
         public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 500;
         public int HIGH_BAR_HEIGHT = 800;
-        public int TOLERANCE = 20;
+        public int TOLERANCE = 40;
     }
 
     PIDController liftController;
