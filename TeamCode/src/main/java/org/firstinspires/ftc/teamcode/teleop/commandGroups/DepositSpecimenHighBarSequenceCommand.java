@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftDepositSp
             super(
                     new HighBarCommand(robot.lift,telemetry),
                     new GripperOpenCommand(robot.depositor,telemetry),
-                    new DepositorDownCommand(robot.depositor,telemetry),
                     new Grabheight(robot.lift,telemetry)
             );
 

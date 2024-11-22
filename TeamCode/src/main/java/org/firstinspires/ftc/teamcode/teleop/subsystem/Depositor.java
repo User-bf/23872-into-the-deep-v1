@@ -22,7 +22,7 @@ public class Depositor implements Component {
         public double gripperUpperPWM = 2300;
 
         public final static int GRIPPER_OPEN_TIME_MS = 250;
-        public final static int GRIPPER_CLOSE_TIME_MS = 300;
+        public final static int GRIPPER_CLOSE_TIME_MS = 3000;
 
         public final static int DEPOSITOR_FORWARD_TIME_MS = 250;
         public final static int DEPOSITOR_BACK_TIME_MS = 250;

@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftGrabSpeci
 public class GrabSpecimenSequenceCommand extends SequentialCommandGroup {
     public GrabSpecimenSequenceCommand(BrainSTEMRobot robot, Telemetry telemetry) {
         super(
-                new DepositorBackCommand(robot.depositor, telemetry),
                 new LiftGrabSpecimenCommand(robot.lift, telemetry),
+                new DepositorBackCommand(robot.depositor, telemetry),
                 new GripperOpenCommand(robot.depositor, telemetry)
         );
 

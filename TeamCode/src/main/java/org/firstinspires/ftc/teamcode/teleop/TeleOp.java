@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -59,23 +60,6 @@ public class TeleOp extends LinearOpMode {
     }
 
     private void driver1ExtensionControls(BrainSTEMRobot robot) {
-        
-    }
-
-    private void driver2LiftControls(BrainSTEMRobot robot) {
-        if(gamepad2.left_trigger > 0.5) {
-            new GrabSpecimenSequenceCommand(robot, telemetry).schedule();
-        }
-        else if (gamepad2.right_trigger > 0.5) {
-            new SpecimenPreDeposit(robot, telemetry).schedule();
-        }
-
-        if(gamepad2.y) {
-            new DepositSpecimenHighBarSequenceCommand(robot,telemetry).schedule();
-        }
-
-    }
-    private void drive1ExtensionControls(BrainSTEMRobot robot) {
         if (gamepad1.dpad_up) {
             robot.extension.setCustom();
             robot.extension.incrementOut();
@@ -86,6 +70,22 @@ public class TeleOp extends LinearOpMode {
 
         if (gamepad1.x) {
             robot.extension.setRetract();
+        }
+
+    }
+
+    private void driver2LiftControls(BrainSTEMRobot robot) {
+        if(gamepad2.left_trigger > 0.5) {
+            new GrabSpecimenSequenceCommand(robot, telemetry).schedule();
+        }
+        else if (gamepad2.right_trigger > 0.5) {
+            SequentialCommandGroup grab = new SpecimenPreDeposit(robot, telemetry);
+            grab.schedule();
+
+        }
+
+        if(gamepad2.y) {
+            new DepositSpecimenHighBarSequenceCommand(robot,telemetry).schedule();
         }
 
     }
