@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.util.CachingServo;
 @Config
 public class Depositor implements Component {
     public static class Params {
-        public double depositorForwardPosition = 0.89;
+        public double depositorForwardPosition = 0.85;
         public double depositorBackwardPosition = 0.375;
         public double depositorDownPosition = 0.01;
         public double depositorUpPosition = 0.65;
