@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.drivetrain.PIDDrivetrain;
+import org.firstinspires.ftc.teamcode.drivetrain.PinpointDrive;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositGripSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositReleaseSequenceCommand;
 import org.firstinspires.ftc.teamcode.teleop.commandGroups.DepositSpecimenHighBarSequenceCommand;
@@ -26,9 +28,6 @@ public class TeleOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
-        PIDDrivetrain drive = new PIDDrivetrain(hardwareMap, telemetry, new Pose2D(DistanceUnit.INCH,0,0,
-                AngleUnit.RADIANS, 0));
 
         BrainSTEMRobot robot = new BrainSTEMRobot(telemetry, hardwareMap);
 
@@ -49,6 +48,7 @@ public class TeleOp extends LinearOpMode {
     private void updateDriver1(BrainSTEMRobot robot) {
         driver1LiftControls(robot);
         driver1DepositorControls(robot);
+        driver2DepositorControls(robot);
         driver1CollectorControls(robot);
         driver1ExtensionControls(robot);
         driver2ExtensionControls(robot);
@@ -60,6 +60,24 @@ public class TeleOp extends LinearOpMode {
     }
 
     private void driver1ExtensionControls(BrainSTEMRobot robot) {
+<<<<<<< HEAD
+=======
+        
+    }
+
+    private void driver2LiftControls(BrainSTEMRobot robot) {
+        if(gamepad2.left_trigger > 0.5) {
+            new GrabSpecimenSequenceCommand(robot, telemetry).schedule();
+        } else if (gamepad2.right_trigger > 0.5) {
+            new SpecimenPreDeposit(robot, telemetry).schedule();
+        }
+
+        if(gamepad2.y) {
+            new DepositSpecimenHighBarSequenceCommand(robot,telemetry).schedule();
+        }
+    }
+    private void drive1ExtensionControls(BrainSTEMRobot robot) {
+>>>>>>> 7f25ad22c2536452a934e51cdad3b9c882b2eebd
         if (gamepad1.dpad_up) {
             robot.extension.setCustom();
             robot.extension.incrementOut();
@@ -71,7 +89,6 @@ public class TeleOp extends LinearOpMode {
         if (gamepad1.x) {
             robot.extension.setRetract();
         }
-
     }
 
     private void driver2LiftControls(BrainSTEMRobot robot) {
@@ -118,19 +135,12 @@ public class TeleOp extends LinearOpMode {
     }
 
     private void driver1DepositorControls(BrainSTEMRobot robot) {
-//        if (gamepad1.left_bumper) {
-//            robot.depositor.setDepositorForward();
-//        } else if (gamepad1.right_bumper) {
-//            robot.depositor.setDepositorNeutral();
-//        } else {
-//            robot.depositor.setDepositorBackward();
-//        }
-//
-        if (gamepad2.right_trigger > 0.5) {
-            new DepositReleaseSequenceCommand(robot, telemetry).schedule();
-        }
-//        else {
-//            new GripperCloseCommand(robot.depositor, telemetry).schedule();
+
+    }
+
+    private void driver2DepositorControls(BrainSTEMRobot robot) {
+//        if (gamepad2.right_trigger > 0.5) {
+//            new DepositReleaseSequenceCommand(robot, telemetry).schedule();
 //        }
 
         if (gamepad2.right_bumper) {
