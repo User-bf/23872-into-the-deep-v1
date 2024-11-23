@@ -20,8 +20,8 @@ public class DepositGripSequenceCommand extends SequentialCommandGroup {
         super(
                 new GripperOpenCommand(robot.depositor, telemetry),
                 new DepositorDownCommand(robot.depositor, telemetry),
-                new LiftGrabCommand(robot.lift, telemetry),
                 new GripperCloseCommand(robot.depositor, telemetry),
+                new LiftGrabCommand(robot.lift, telemetry),
                 new LiftDeconflictCommand(robot.lift, telemetry),
                 new DepositorBackCommand(robot.depositor, telemetry)
         );

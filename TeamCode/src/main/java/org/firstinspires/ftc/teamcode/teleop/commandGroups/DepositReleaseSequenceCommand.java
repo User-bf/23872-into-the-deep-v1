@@ -20,8 +20,8 @@ public class DepositReleaseSequenceCommand extends SequentialCommandGroup {
         super(
                 new DepositorForwardCommand(robot.depositor,telemetry),
                 new HighBarCommand(robot.lift,telemetry),
-                new GripperOpenCommand(robot.depositor, telemetry),
                 new DepositorUpCommand(robot.depositor, telemetry),
+                new GripperOpenCommand(robot.depositor, telemetry),
                 new LiftDeconflictCommand(robot.lift, telemetry),
                 new DepositorDownCommand(robot.depositor, telemetry)
         );

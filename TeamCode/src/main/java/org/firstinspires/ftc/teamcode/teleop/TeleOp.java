@@ -46,52 +46,32 @@ public class TeleOp extends LinearOpMode {
     }
 
     private void updateDriver1(BrainSTEMRobot robot) {
-        driver1LiftControls(robot);
+        driver2LiftControls(robot);
         driver1DepositorControls(robot);
         driver2DepositorControls(robot);
         driver1CollectorControls(robot);
         driver1ExtensionControls(robot);
-        driver2ExtensionControls(robot);
        // driver2CollectorControls(robot);
-        driver2LiftControls(robot);
+        driver2DepositorControls(robot);
+        driver2qwertyControls(robot);
     }
 
-    private void driver2ExtensionControls(BrainSTEMRobot robot) {
-    }
 
     private void driver1ExtensionControls(BrainSTEMRobot robot) {
-<<<<<<< HEAD
-=======
-        
-    }
-
-    private void driver2LiftControls(BrainSTEMRobot robot) {
-        if(gamepad2.left_trigger > 0.5) {
-            new GrabSpecimenSequenceCommand(robot, telemetry).schedule();
-        } else if (gamepad2.right_trigger > 0.5) {
-            new SpecimenPreDeposit(robot, telemetry).schedule();
-        }
-
-        if(gamepad2.y) {
-            new DepositSpecimenHighBarSequenceCommand(robot,telemetry).schedule();
-        }
-    }
-    private void drive1ExtensionControls(BrainSTEMRobot robot) {
->>>>>>> 7f25ad22c2536452a934e51cdad3b9c882b2eebd
         if (gamepad1.dpad_up) {
             robot.extension.setCustom();
             robot.extension.incrementOut();
         } else if (gamepad1.dpad_down) {
             robot.extension.setCustom();
             robot.extension.incrementIn();
-        }
+    }
 
-        if (gamepad1.x) {
+        if (gamepad2.x) {
             robot.extension.setRetract();
         }
     }
 
-    private void driver2LiftControls(BrainSTEMRobot robot) {
+    private void driver2DepositorControls(BrainSTEMRobot robot) {
         if(gamepad2.left_trigger > 0.5) {
             new GrabSpecimenSequenceCommand(robot, telemetry).schedule();
         }
@@ -113,7 +93,7 @@ public class TeleOp extends LinearOpMode {
 //        }
 //    }
 
-    private void driver1LiftControls(BrainSTEMRobot robot) {
+    private void driver2LiftControls(BrainSTEMRobot robot) {
         if (gamepad2.dpad_up) {
             new LiftHighBasketCommand(robot.lift, telemetry).schedule();
         } else if (gamepad2.dpad_down) {
@@ -138,10 +118,10 @@ public class TeleOp extends LinearOpMode {
 
     }
 
-    private void driver2DepositorControls(BrainSTEMRobot robot) {
-//        if (gamepad2.right_trigger > 0.5) {
-//            new DepositReleaseSequenceCommand(robot, telemetry).schedule();
-//        }
+    private void driver2qwertyControls(BrainSTEMRobot robot) {
+        if (gamepad2.right_trigger > 0.5) {
+            new DepositReleaseSequenceCommand(robot, telemetry).schedule();
+        }
 
         if (gamepad2.right_bumper) {
             new DepositGripSequenceCommand(robot, telemetry).schedule();
