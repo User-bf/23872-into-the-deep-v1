@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode.auto;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TimeTurn;
 import com.acmerobotics.roadrunner.Trajectory;
 import com.acmerobotics.roadrunner.TrajectoryBuilder;
@@ -9,9 +14,11 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.drivetrain.PinpointDrive;
 
@@ -19,36 +26,64 @@ import org.firstinspires.ftc.teamcode.drivetrain.PinpointDrive;
 public class RedSideYellowBlocks extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(-36, -60, Math.PI/2);
-        Pose2d rightBlockApproachPose = new Pose2d(-40, -12, Math.PI/2);
-        Pose2d rightBlockMovePose = new Pose2d(-60, -60, -Math.PI/2);
-        PinpointDrive drive = new PinpointDrive(hardwareMap, beginPose);
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        Pose2d beginPose = new Pose2d(-39, -64, Math.toRadians(0));
+        Pose2d depositPose = new Pose2d(-60, -60, Math.toRadians(45));
+        Pose2d rightBlockPose = new Pose2d(-55, -55, Math.toRadians(75));
 
-//        Action rightBlockApproach = drive.actionBuilder(beginPose)
-//                .splineTo(rightBlockApproachPose.position, 0)
-//                .build();
-//
-//        Action rightBlockMove = drive.actionBuilder(rightBlockApproachPose)
-//                .splineTo(rightBlockApproachPose.position, 0)
-//                .build();
+        BrainSTEMRobot robot = new BrainSTEMRobot(telemetry, hardwareMap, beginPose);
+        PinpointDrive drive = robot.drive;
 
-        TrajectoryActionBuilder rightBlock = drive.actionBuilder(beginPose)
-                .splineTo(rightBlockApproachPose.position, Math.PI/2)
-                .turnTo(Math.toRadians(0))
-                .splineTo(rightBlockMovePose.position, -Math.PI/2);
+        TrajectoryActionBuilder depositPreloadTrajectory = drive.actionBuilder(beginPose)
+                .setReversed(true)
+                .splineToLinearHeading(depositPose, Math.toRadians(210));
 
-        TrajectoryActionBuilder rightTurn90Trajectory = drive.actionBuilder(rightBlockMovePose)
-                .turn(Math.toRadians(90));
+        TrajectoryActionBuilder rightBlockTrajectory = drive.actionBuilder(depositPose)
+                .splineToLinearHeading(rightBlockPose, Math.toRadians(75));
 
+        TrajectoryActionBuilder depositTrajectory = drive.actionBuilder(rightBlockPose)
+                .setReversed(true)
+                .splineToLinearHeading(depositPose, Math.toRadians(225));
 
-        Action trajectory = rightBlock.build();
-        Action rightTurn90 = rightTurn90Trajectory.build();
+        Action depositPreloadApproach = depositPreloadTrajectory.build();
+        Action rightBlock = rightBlockTrajectory.build();
+        Action deposit = depositTrajectory.build();
+
+        Actions.runBlocking(
+                robot.depositor.closeClaw()
+        );
+
+        telemetry.addLine("Robot Ready");
+        telemetry.update();
 
         waitForStart();
 
         Actions.runBlocking(
                 new SequentialAction(
-                        trajectory
+                        new ParallelAction(
+                                robot.extension.gotoRetract(),
+                                robot.lift.gotoHighBasket(),
+                                robot.depositor.gotoUp(),
+                                depositPreloadApproach
+                        ),
+                        robot.depositor.gotoBackward(),
+                        new SleepAction(0.25),
+                        robot.depositor.openClaw(),
+                        new SleepAction(0.25),
+                        robot.depositor.gotoForward(),
+                        new SleepAction(0.1),
+
+                        new ParallelAction(
+                                robot.lift.gotoDeconflict(),
+                                rightBlock
+                        ),
+
+//                        robot.extension.gotoMax(),
+//                        robot.collector.collectorInAction(),
+                        deposit
+
+
+
                 )
         );
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleop.subsystem;
+package org.firstinspires.ftc.teamcode.auto.subsystem;
 
 import androidx.annotation.NonNull;
 
@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.auto.subsystem.Lift;
 import org.firstinspires.ftc.teamcode.util.CachingMotor;
 import org.firstinspires.ftc.teamcode.util.PIDController;
 @Config
@@ -53,7 +52,7 @@ public class Extension implements Component {
 
     // Constants
 
-    public static Extension.Params PARAMS = new Extension.Params();
+    public static Params PARAMS = new Params();
 
 
     // constructor for Extension class
@@ -131,8 +130,8 @@ public class Extension implements Component {
         return !extensionLimitSwitch.getState();
     }
 
-    private void setTarget(double target) {
-        extensionController.setTarget(target);
+    private void setTarget(int target) {
+        extension.setTargetPosition(target);
     }
 
     private void selectState() {
@@ -153,8 +152,9 @@ public class Extension implements Component {
                 break;
 
             case CUSTOM:
+                extension.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 setTarget(target);
-                setMotorPower(getControlPower());
+                setMotorPower(1.0);;
                 break;
         }
     }
@@ -174,15 +174,56 @@ public class Extension implements Component {
     @Override
     public void update() {
         selectState();
-        telemetry.addData("Extension Position", extension.getCurrentPosition());
-        telemetry.addData("Extension Power", extension.getPower());
-        telemetry.addData("Extension Limit", isExtensionLimit());
-        telemetry.addData("Extension State", extensionState);
-        telemetry.addData("Extension Target", target);
     }
 
     public String test() {
         return null;
+    }
+
+    public class GotoMax implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                target = Params.EXTENSION_MAX;
+                extensionState = ExtensionState.CUSTOM;
+                initialized = true;
+            }
+
+            if (extension.getCurrentPosition() < 450) {
+                extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                setMotorPower(1.0);
+            }
+
+            update();
+
+            return !inTolerance();
+        }
+    }
+
+    public Action gotoMax() {
+        return new GotoMax();
+    }
+
+    public class GotoRetract implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                extensionState = ExtensionState.RETRACT;
+                initialized = true;
+            }
+
+            update();
+
+            return !inTolerance();
+        }
+    }
+
+    public Action gotoRetract() {
+        return new GotoRetract();
     }
 
 }
