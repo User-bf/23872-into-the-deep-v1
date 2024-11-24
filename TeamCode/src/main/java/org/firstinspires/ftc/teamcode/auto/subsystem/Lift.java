@@ -24,12 +24,12 @@ public class Lift implements Component {
         public int DECONFLICT_HEIGHT = 200;
         public int GRAB_HEIGHT = 23;
         public int LOW_BASKET_HEIGHT = 600;
-        public int HIGH_BASKET_HEIGHT = 1150;
+        public int HIGH_BASKET_HEIGHT = 1120;
         public int SPECIMEN_LEVEL_HEIGHT = 80;
         public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
         public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 500;
         public int HIGH_BAR_HEIGHT = 800;
-        public int TOLERANCE = 5;
+        public int TOLERANCE = 20;
     }
 
     PIDController liftController;
@@ -200,20 +200,12 @@ public class Lift implements Component {
                 initialized = true;
             }
 
-            if (liftMotor.getCurrentPosition() < 1100) {
+            if (liftMotor.getCurrentPosition() < 1050) {
                 liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 liftMotor.setPower(1.0);
             } else {
                 update();
             }
-
-            packet.put("liftMotor Target", liftMotor.getTargetPosition());
-            packet.put("liftMotor Position", liftMotor.getCurrentPosition());
-            packet.put("liftMotor Power", liftMotor.getPower());
-            packet.put("Lift State", liftState);
-            packet.put("Lift inTolerance", inTolerance());
-            packet.put("inTolerance Math", Math.abs(liftMotor.getCurrentPosition() - liftController.getTarget()));
-            packet.put("inTolerance Function", Math.abs(liftMotor.getCurrentPosition() - liftController.getTarget()) < PARAMS.TOLERANCE);
 
             return !inTolerance();
         }

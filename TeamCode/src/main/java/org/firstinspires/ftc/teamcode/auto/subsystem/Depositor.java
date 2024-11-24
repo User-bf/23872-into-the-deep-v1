@@ -220,9 +220,27 @@ public class Depositor implements Component {
         }
     }
 
+    public Action gotoDown() {
+        return new GotoDown();
+    }
+
+    public class GotoDown implements Action {
+        private boolean initialized = false;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                moveDepositorDown();
+                initialized = true;
+            }
+
+            return false;
+        }
+    }
+
     public Action gotoUp() {
         return new GotoUp();
     }
+
 
     public class OpenClaw implements Action {
         @Override

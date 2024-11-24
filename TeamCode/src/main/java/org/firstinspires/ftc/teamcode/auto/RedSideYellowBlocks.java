@@ -29,7 +29,7 @@ public class RedSideYellowBlocks extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         Pose2d beginPose = new Pose2d(-39, -64, Math.toRadians(0));
         Pose2d depositPose = new Pose2d(-60, -60, Math.toRadians(45));
-        Pose2d rightBlockPose = new Pose2d(-55, -55, Math.toRadians(75));
+        Pose2d rightBlockPose = new Pose2d(-55, -55, Math.toRadians(80));
 
         BrainSTEMRobot robot = new BrainSTEMRobot(telemetry, hardwareMap, beginPose);
         PinpointDrive drive = robot.drive;
@@ -71,16 +71,37 @@ public class RedSideYellowBlocks extends LinearOpMode {
                         robot.depositor.openClaw(),
                         new SleepAction(0.25),
                         robot.depositor.gotoUp(),
-                        new SleepAction(0.1),
+                        new SleepAction(0.25),
 
                         new ParallelAction(
                                 robot.lift.gotoDeconflict(),
                                 rightBlock
                         ),
-
-//                        robot.extension.gotoMax(),
-//                        robot.collector.collectorInAction(),
-                        deposit
+                        robot.depositor.gotoDown(),
+                        robot.extension.gotoMax(),
+                        robot.collector.collectorInAction(),
+                        new SleepAction(2.0),
+                        robot.collector.collectorOffAction(),
+                        robot.extension.gotoRetract(),
+                        new SleepAction(0.75),
+                        robot.lift.gotoGrab(),
+                        robot.depositor.closeClaw(),
+                        new SleepAction(0.35),
+                        deposit,
+                        robot.depositor.gotoUp(),
+                        new SleepAction(0.75),
+                        robot.lift.gotoHighBasket(),
+                        new SleepAction(1.25),
+                        robot.depositor.gotoBackward(),
+                        new SleepAction(0.5),
+                        robot.depositor.openClaw(),
+                        new SleepAction(0.25),
+                        robot.depositor.gotoUp(),
+                        new SleepAction(0.75),
+                        robot.lift.gotoDeconflict(),
+                        new SleepAction(0.5),
+                        robot.depositor.gotoDown(),
+                        new SleepAction(0.5)
 
 
 

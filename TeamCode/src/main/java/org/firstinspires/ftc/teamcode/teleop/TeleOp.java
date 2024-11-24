@@ -66,7 +66,7 @@ public class TeleOp extends LinearOpMode {
             robot.extension.incrementIn();
     }
 
-        if (gamepad2.x) {
+        if (gamepad1.x) {
             robot.extension.setRetract();
         }
     }

@@ -31,9 +31,9 @@ public class Extension implements Component {
         public double kD_Up = 0.000;//FIXME
         public double kS = 0;
 
-        public int TOLERANCE = 5;
+        public int TOLERANCE = 40;
 
-        public static final int EXTENSION_MAX = 500;
+        public static final int EXTENSION_MAX = 900;
         public static final int EXTENSION_MIN = 0;
         public int EXTENSION_CUSTOM = 10;
         public static final int RETRACT_POSITION = 0;
@@ -143,6 +143,7 @@ public class Extension implements Component {
                     target = 0;
                     setCustom();
                 } else {
+                    extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     setMotorPower(-1.0);
                 }
                 break;
@@ -193,7 +194,7 @@ public class Extension implements Component {
 
             if (extension.getCurrentPosition() < 450) {
                 extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                setMotorPower(1.0);
+                setMotorPower(-1.0);
             }
 
             update();
@@ -214,11 +215,16 @@ public class Extension implements Component {
             if (!initialized) {
                 extensionState = ExtensionState.RETRACT;
                 initialized = true;
+                target = 0;
             }
 
-            update();
+            if (extension.getCurrentPosition() > 10) {
+                setMotorPower(-1.0);
+            } else {
+                setMotorPower(-0.05);
+            }
 
-            return !inTolerance();
+            return extension.getCurrentPosition() < 10;
         }
     }
 
