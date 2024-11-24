@@ -18,10 +18,10 @@ import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftGrabComma
 public class DepositReleaseSequenceCommand extends SequentialCommandGroup {
     public DepositReleaseSequenceCommand(BrainSTEMRobot robot, Telemetry telemetry){
         super(
-                new DepositorForwardCommand(robot.depositor,telemetry),
-                new HighBarCommand(robot.lift,telemetry),
-                new DepositorUpCommand(robot.depositor, telemetry),
+                new DepositorBackCommand(robot.depositor,telemetry),
+//                new HighBarCommand(robot.lift,telemetry),
                 new GripperOpenCommand(robot.depositor, telemetry),
+                new DepositorUpCommand(robot.depositor, telemetry),
                 new LiftDeconflictCommand(robot.lift, telemetry),
                 new DepositorDownCommand(robot.depositor, telemetry)
         );

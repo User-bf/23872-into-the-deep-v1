@@ -14,15 +14,20 @@ import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperOpe
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftBaseCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftDeconflictCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftGrabCommand;
+import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftGrabSpecimenCommand;
 
 public class DepositGripSequenceCommand extends SequentialCommandGroup {
     public DepositGripSequenceCommand(BrainSTEMRobot robot, Telemetry telemetry){
         super(
                 new GripperOpenCommand(robot.depositor, telemetry),
+                new WaitCommand(500),
                 new DepositorDownCommand(robot.depositor, telemetry),
-                new GripperCloseCommand(robot.depositor, telemetry),
+                new WaitCommand(500),
                 new LiftGrabCommand(robot.lift, telemetry),
+                new GripperCloseCommand(robot.depositor, telemetry),
+                new WaitCommand(500),
                 new LiftDeconflictCommand(robot.lift, telemetry),
+                new WaitCommand(500),
                 new DepositorBackCommand(robot.depositor, telemetry)
         );
     }
