@@ -70,7 +70,7 @@ public class RedSideYellowBlocks extends LinearOpMode {
                         new SleepAction(0.25),
                         robot.depositor.openClaw(),
                         new SleepAction(0.25),
-                        robot.depositor.gotoForward(),
+                        robot.depositor.gotoUp(),
                         new SleepAction(0.1),
 
                         new ParallelAction(
