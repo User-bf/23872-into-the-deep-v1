@@ -24,12 +24,12 @@ public class Lift implements Component {
         public int DECONFLICT_HEIGHT = 200;
         public int GRAB_HEIGHT = 23;
         public int LOW_BASKET_HEIGHT = 600;
-        public int HIGH_BASKET_HEIGHT = 1120;
+        public int HIGH_BASKET_HEIGHT = 1030;
         public int SPECIMEN_LEVEL_HEIGHT = 80;
         public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
         public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 500;
         public int HIGH_BAR_HEIGHT = 800;
-        public int TOLERANCE = 20;
+        public int TOLERANCE = 30;
     }
 
     PIDController liftController;
@@ -161,6 +161,10 @@ public class Lift implements Component {
         return Math.abs(liftMotor.getCurrentPosition() - liftMotor.getTargetPosition()) < PARAMS.TOLERANCE;
     }
 
+    public boolean inTightTolerance() {
+        return Math.abs(liftMotor.getCurrentPosition() - liftMotor.getTargetPosition()) < (PARAMS.TOLERANCE - 10);
+    }
+
     public void setLowBasket() {
         liftState = LiftState.LOW_BASKET;
     }
@@ -198,16 +202,17 @@ public class Lift implements Component {
             if (!initialized) {
                 liftState = LiftState.HIGH_BASKET;
                 initialized = true;
-            }
-
-            if (liftMotor.getCurrentPosition() < 1050) {
                 liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 liftMotor.setPower(1.0);
-            } else {
+            }
+
+            if (liftMotor.getCurrentPosition() > 750) {
                 update();
             }
 
-            return !inTolerance();
+            packet.put("Lift Pos", liftMotor.getCurrentPosition());
+
+            return liftMotor.getCurrentPosition() > 1000;
         }
     }
 
@@ -226,7 +231,7 @@ public class Lift implements Component {
             }
 
             update();
-            return !inTolerance();
+            return !inTightTolerance();
         }
     }
 
@@ -245,7 +250,7 @@ public class Lift implements Component {
             }
 
             update();
-            return !inTolerance();
+            return !inTightTolerance();
         }
     }
 

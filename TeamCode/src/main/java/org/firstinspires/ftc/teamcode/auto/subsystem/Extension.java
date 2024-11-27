@@ -153,8 +153,8 @@ public class Extension implements Component {
                 break;
 
             case CUSTOM:
-                extension.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 setTarget(target);
+                extension.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 setMotorPower(1.0);;
                 break;
         }
@@ -194,7 +194,7 @@ public class Extension implements Component {
 
             if (extension.getCurrentPosition() < 450) {
                 extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                setMotorPower(-1.0);
+                setMotorPower(1.0);
             }
 
             update();
@@ -209,22 +209,24 @@ public class Extension implements Component {
 
     public class GotoRetract implements Action {
         private boolean initialized = false;
+        private boolean continueRunning = true;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                extensionState = ExtensionState.RETRACT;
                 initialized = true;
-                target = 0;
-            }
-
-            if (extension.getCurrentPosition() > 10) {
+                extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 setMotorPower(-1.0);
-            } else {
-                setMotorPower(-0.05);
             }
 
-            return extension.getCurrentPosition() < 10;
+            if (extension.getCurrentPosition() < 50) {
+                setMotorPower(-0.02);
+                continueRunning = false;
+            }
+
+            packet.put("Ext Pos", extension.getCurrentPosition());
+
+            return continueRunning;
         }
     }
 

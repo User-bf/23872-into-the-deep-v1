@@ -17,7 +17,7 @@ public class Depositor implements Component {
     public static class Params {
         public double depositorForwardPosition = 0.85;
         public double depositorBackwardPosition = 0.375;
-        public double depositorDownPosition = 0.01;
+        public double depositorDownPosition = 0.075;
         public double depositorUpPosition = 0.65;
         public double depositorNeutralPosition = 0.5;
         public double gripperClosedPosition = 0.99;
@@ -220,6 +220,10 @@ public class Depositor implements Component {
         }
     }
 
+    public Action gotoUp() {
+        return new GotoUp();
+    }
+
     public Action gotoDown() {
         return new GotoDown();
     }
@@ -236,11 +240,6 @@ public class Depositor implements Component {
             return false;
         }
     }
-
-    public Action gotoUp() {
-        return new GotoUp();
-    }
-
 
     public class OpenClaw implements Action {
         @Override
