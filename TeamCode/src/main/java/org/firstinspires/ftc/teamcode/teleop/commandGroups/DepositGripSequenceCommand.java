@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.teleop.commandGroups;
 
+import com.acmerobotics.roadrunner.SleepAction;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
@@ -19,16 +20,14 @@ import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftGrabSpeci
 public class DepositGripSequenceCommand extends SequentialCommandGroup {
     public DepositGripSequenceCommand(BrainSTEMRobot robot, Telemetry telemetry){
         super(
-                new GripperOpenCommand(robot.depositor, telemetry),
+                new GripperOpenCommand(robot.depositor,telemetry),
+                new DepositorDownCommand(robot.depositor,telemetry),
+                new LiftGrabCommand(robot.lift,telemetry),
                 new WaitCommand(500),
-                new DepositorDownCommand(robot.depositor, telemetry),
+                new GripperCloseCommand(robot.depositor,telemetry),
                 new WaitCommand(500),
-                new LiftGrabCommand(robot.lift, telemetry),
-                new GripperCloseCommand(robot.depositor, telemetry),
-                new WaitCommand(500),
-                new LiftDeconflictCommand(robot.lift, telemetry),
-                new WaitCommand(500),
-                new DepositorBackCommand(robot.depositor, telemetry)
+                new LiftDeconflictCommand(robot.lift,telemetry),
+                new DepositorBackCommand(robot.depositor,telemetry)
         );
     }
 }

@@ -19,7 +19,7 @@ public class Depositor implements Component {
         public double gripperClosedPosition = 0.99;
         public double gripperOpenedPosition = 0.01;
         public double gripperLowerPWM = 100;
-        public double gripperUpperPWM = 2200;
+        public double gripperUpperPWM = 2520;
 
         public final static int GRIPPER_OPEN_TIME_MS = 250;
         public final static int GRIPPER_CLOSE_TIME_MS = 250;
@@ -163,6 +163,7 @@ public class Depositor implements Component {
 
     public void setGripperClosed() {
         gripperState = GripperState.GRIPPER_CLOSED;
+        telemetry.addLine("vihaan");
     }
 
     public void setGripperOpen() {

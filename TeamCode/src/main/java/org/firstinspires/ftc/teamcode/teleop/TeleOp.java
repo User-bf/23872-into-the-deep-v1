@@ -78,6 +78,12 @@ public class TeleOp extends LinearOpMode {
     }
 
     private void driver1CollectorControls(BrainSTEMRobot robot) {
+        if (gamepad1.right_bumper) {
+            robot.depositor.setGripperClosed();
+        } else {
+            robot.depositor.setGripperOpen();
+        }
+
         if (gamepad1.a) {
             robot.collector.setIntake();
         } else if (gamepad1.b) {
