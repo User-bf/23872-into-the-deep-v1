@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop.commandGroups;
 
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.teleop.BrainSTEMRobot;
@@ -19,7 +20,9 @@ import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftDepositSp
         public DepositSpecimenHighBarSequenceCommand(BrainSTEMRobot robot, Telemetry telemetry) {
             super(
                     new HighBarCommand(robot.lift,telemetry),
+                    new WaitCommand(250),
                     new GripperOpenCommand(robot.depositor,telemetry),
+                    new DepositorDownCommand(robot.depositor,telemetry),
                     new Grabheight(robot.lift,telemetry)
             );
 

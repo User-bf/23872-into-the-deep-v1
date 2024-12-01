@@ -15,7 +15,6 @@ public class SpecimenPreDeposit extends SequentialCommandGroup {
     public SpecimenPreDeposit(BrainSTEMRobot robot, Telemetry telemetry) {
         super(
                 new GripperCloseCommand(robot.depositor, telemetry),
-                new WaitCommand(500),
                 new LiftSpecimenPreDeposit(robot.lift, telemetry),
                 new DepositorForwardCommand(robot.depositor, telemetry)
         );
