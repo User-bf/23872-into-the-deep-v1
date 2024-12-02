@@ -15,6 +15,7 @@ public class Depositor implements Component {
         public double depositorBackwardPosition = 0.375;
         public double depositorDownPosition = 0.01;
         public double depositorUpPosition = 0.65;
+        public double depositorHighBasket = 0.45;
         public double depositorNeutralPosition = 0.5;
         public double gripperClosedPosition = 0.99;
         public double gripperOpenedPosition = 0.01;
@@ -60,7 +61,8 @@ public class Depositor implements Component {
         DEPOSITOR_BACKWARD,
         DEPOSITOR_NEUTRAL,
         DEPOSITOR_DOWN,
-        DEPOSITOR_UP
+        DEPOSITOR_UP,
+        DEPOSITOR_HIGH_BASKET,
     }
 
     @Override
@@ -105,6 +107,10 @@ public class Depositor implements Component {
 
             case DEPOSITOR_NEUTRAL:
                 moveDepositorNeutral();
+                break;
+
+            case DEPOSITOR_HIGH_BASKET:
+                moveDepositorHighBasket();
                 break;
         }
     }
@@ -169,5 +175,9 @@ public class Depositor implements Component {
     public void setGripperOpen() {
         gripperState = GripperState.GRIPPER_OPEN;
     }
-}
+
+    public void moveDepositorHighBasket() {
+        depositorState = DepositorState.DEPOSITOR_HIGH_BASKET;
+    }
+    }
 

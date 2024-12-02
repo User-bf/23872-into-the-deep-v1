@@ -90,9 +90,9 @@ public class TeleOp extends LinearOpMode {
     }
 
     private void driver2DepositorControls(BrainSTEMRobot robot) {
- ///       if (gamepad2.right_ > 0.5) {
-    ///        new DepositReleaseSequenceCommand(robot, telemetry).schedule();
-    ///    }
+        if (gamepad2.left_bumper) {
+            new DepositReleaseSequenceCommand(robot, telemetry).schedule();
+        }
 
         if (gamepad2.right_bumper) {
             new DepositGripSequenceCommand(robot, telemetry).schedule();

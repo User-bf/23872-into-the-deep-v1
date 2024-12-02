@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.teleop.BrainSTEMRobot;
 import org.firstinspires.ftc.teamcode.teleop.commands.depositorCommands.DepositorBackCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.depositorCommands.DepositorDownCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.depositorCommands.DepositorForwardCommand;
+import org.firstinspires.ftc.teamcode.teleop.commands.depositorCommands.DepositorHighBasketCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.depositorCommands.DepositorUpCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperCloseCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperOpenCommand;
@@ -18,7 +19,7 @@ import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftGrabComma
 public class DepositReleaseSequenceCommand extends SequentialCommandGroup {
     public DepositReleaseSequenceCommand(BrainSTEMRobot robot, Telemetry telemetry){
         super(
-                new DepositorBackCommand(robot.depositor,telemetry),
+                new DepositorHighBasketCommand(robot.depositor,telemetry),
 //                new HighBarCommand(robot.lift,telemetry),
                 new GripperOpenCommand(robot.depositor, telemetry),
                 new DepositorUpCommand(robot.depositor, telemetry),

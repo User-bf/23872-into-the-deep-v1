@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftDepositSp
                     new WaitCommand(250),
                     new GripperOpenCommand(robot.depositor,telemetry),
                     new DepositorDownCommand(robot.depositor,telemetry),
-                    new Grabheight(robot.lift,telemetry)
+                    new LiftDeconflictCommand(robot.lift,telemetry)
             );
 
         }

@@ -20,14 +20,14 @@ public class Lift implements Component {
 
         public int BASE_HEIGHT = 25;
         public int DECONFLICT_HEIGHT = 200;
-        public int GRAB_HEIGHT = 15;
+        public int GRAB_HEIGHT = 17;
         public int LOW_BASKET_HEIGHT = 650;
-        public int HIGH_BASKET_HEIGHT = 1220;
-        public int SPECIMEN_LEVEL_HEIGHT = 80;
+        public int HIGH_BASKET_HEIGHT = 1186;
+        public int SPECIMEN_LEVEL_HEIGHT = 60;
         public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
         public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 800;
-        public int HIGH_BAR_HEIGHT = 600;
-        public int TOLERANCE = 20;
+        public int HIGH_BAR_HEIGHT = 580;
+        public int TOLERANCE = 15;
     }
 
     PIDController liftController;
