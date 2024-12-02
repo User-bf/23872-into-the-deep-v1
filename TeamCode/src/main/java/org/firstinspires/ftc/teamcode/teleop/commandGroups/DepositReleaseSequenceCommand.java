@@ -2,6 +2,7 @@
 package org.firstinspires.ftc.teamcode.teleop.commandGroups;
 
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.teleop.BrainSTEMRobot;
@@ -19,9 +20,10 @@ import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftGrabComma
 public class DepositReleaseSequenceCommand extends SequentialCommandGroup {
     public DepositReleaseSequenceCommand(BrainSTEMRobot robot, Telemetry telemetry){
         super(
-                new DepositorHighBasketCommand(robot.depositor,telemetry),
+//                new DepositorHighBasketCommand(robot.depositor,telemetry),
 //                new HighBarCommand(robot.lift,telemetry),
                 new GripperOpenCommand(robot.depositor, telemetry),
+//                new WaitCommand(robot.depositor.PARAMS.GRIPPER_OPEN_TIME_MS),
                 new DepositorUpCommand(robot.depositor, telemetry),
                 new LiftDeconflictCommand(robot.lift, telemetry),
                 new DepositorDownCommand(robot.depositor, telemetry)

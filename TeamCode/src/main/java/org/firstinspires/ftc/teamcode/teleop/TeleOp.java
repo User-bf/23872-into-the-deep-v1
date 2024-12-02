@@ -36,10 +36,7 @@ public class TeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             robot.update();
             updateDrive(robot);
-
             updateDriver1(robot);
-            telemetry.addData("Collector Power", robot.collector.getPower());
-            telemetry.addData("Collector State", robot.collector.getState());
             telemetry.update();
         }
     }

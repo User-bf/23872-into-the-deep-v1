@@ -14,20 +14,23 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 public class Lift implements Component {
     public static class Params {
         ;
-        public double liftKp = 0.02;
-        public double liftKi = 0.01;
-        public double liftKd = 0.0001;
+        public double liftKp = 0.03;
+        public double liftKi = 0.0;
+        public double liftKd = 0.0;
+        public double liftKs = 0.0;
 
         public int BASE_HEIGHT = 25;
         public int DECONFLICT_HEIGHT = 200;
         public int GRAB_HEIGHT = 17;
         public int LOW_BASKET_HEIGHT = 650;
-        public int HIGH_BASKET_HEIGHT = 1186;
+        public int HIGH_BASKET_HEIGHT = 1150;
         public int SPECIMEN_LEVEL_HEIGHT = 60;
         public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
         public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 800;
         public int HIGH_BAR_HEIGHT = 580;
-        public int TOLERANCE = 15;
+        public int TOLERANCE = 20;
+        public double MAX_POWER_UP = 0.2;
+        public double MAX_POWER_DOWN = -0.1;
     }
 
     PIDController liftController;
@@ -38,8 +41,8 @@ public class Lift implements Component {
     public LiftState liftState;
 
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
-        liftController = new PIDController(PARAMS.liftKp, PARAMS.liftKi, PARAMS.liftKd);
-        liftController.setInputBounds(0, 4000);
+        liftController = new PIDController(PARAMS.liftKp, PARAMS.liftKi, PARAMS.liftKd, telemetry);
+        liftController.setInputBounds(0, 1500);
         liftController.setOutputBounds(-0.1, 0.99);
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
@@ -129,21 +132,30 @@ public class Lift implements Component {
     }
 
     private double feedForwardPower() {
-        double x = liftMotor.getCurrentPosition();
-        double m = -0.0;
-        double b = -0.0;
+//        double x = liftMotor.getCurrentPosition();
+//        double m = -0.0;
+//        double b = -0.0;
 
-        return m * x + b;
+        return PARAMS.liftKs;
     }
 
     @Override
     public void update() {
+        selectState();
+        double power = getControlPower();
+//        if (inTolerance() && power < 0) {
+//            power = Math.max(power, PARAMS.MAX_POWER_DOWN);
+//        } else if (inTolerance() && power > 0) {
+//            power = Math.min(power, PARAMS.MAX_POWER_UP);
+//        }
+
+        setMotorPower(power);
+
         telemetry.addData("liftController Target", liftController.getTarget());
         telemetry.addData("liftMotor Position", liftMotor.getCurrentPosition());
+        telemetry.addData("liftMotor Power", liftMotor.getPower());
         telemetry.addData("Lift State", liftState);
 
-        selectState();
-        setMotorPower(getControlPower());
     }
 
     public void setBase() {
