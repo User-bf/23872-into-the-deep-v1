@@ -52,8 +52,8 @@ public class TeleOp extends LinearOpMode {
 
     private void driver1ExtensionControls(BrainSTEMRobot robot) {
         if (gamepad1.dpad_up) {
-            robot.extension.setCustom();
             robot.extension.incrementOut();
+            robot.extension.setCustom();
         } else if (gamepad1.dpad_down) {
             robot.extension.setCustom();
             robot.extension.incrementIn();
@@ -124,6 +124,8 @@ public class TeleOp extends LinearOpMode {
         telemetry.addData("x", robot.drive.pose.position.x);
         telemetry.addData("y", robot.drive.pose.position.y);
         telemetry.addData("heading (deg)", Math.toDegrees(robot.drive.pose.heading.toDouble()));
+        telemetry.addData("Extension Pow", robot.extension.extension.getPower());
+
         drawRobot(robot);
     }
 }

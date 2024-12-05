@@ -20,7 +20,7 @@ public class DepositorHighBasketCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        depositor.setDepositorForward();
+        depositor.setDepositorHighBasket();
         timer.reset();
     }
 
@@ -30,6 +30,6 @@ public class DepositorHighBasketCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return timer.milliseconds() > Depositor.Params.DEPOSITOR_FORWARD_TIME_MS;
+        return timer.milliseconds() > Depositor.Params.DEPOSITOR_HIGH_BASKET_TIME_MS;
     }
 }

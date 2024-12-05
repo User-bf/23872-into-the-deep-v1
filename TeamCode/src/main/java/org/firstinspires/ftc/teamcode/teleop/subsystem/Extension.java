@@ -160,7 +160,8 @@ public class Extension implements Component {
     }
 
 
-    private double getControlPower() {
+    public double getControlPower() {
+
         double pidPower = -extensionController.update(extension.getCurrentPosition());
 
         return pidPower;
@@ -174,11 +175,11 @@ public class Extension implements Component {
     @Override
     public void update() {
         selectState();
-        telemetry.addData("Extension Position", extension.getCurrentPosition());
-        telemetry.addData("Extension Power", extension.getPower());
-        telemetry.addData("Extension Limit", isExtensionLimit());
-        telemetry.addData("Extension State", extensionState);
-        telemetry.addData("Extension Target", target);
+//        telemetry.addData("Extension Position", extension.getCurrentPosition());
+//        telemetry.addData("Extension Power", extension.getPower());
+//        telemetry.addData("Extension Limit", isExtensionLimit());
+//        telemetry.addData("Extension State", extensionState);
+//        telemetry.addData("Extension Target", target);
     }
 
     public String test() {

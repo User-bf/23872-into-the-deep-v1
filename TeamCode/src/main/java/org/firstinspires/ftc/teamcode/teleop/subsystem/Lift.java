@@ -23,11 +23,12 @@ public class Lift implements Component {
         public int DECONFLICT_HEIGHT = 200;
         public int GRAB_HEIGHT = 17;
         public int LOW_BASKET_HEIGHT = 650;
-        public int HIGH_BASKET_HEIGHT = 1150;
+        public int HIGH_BASKET_HEIGHT = 1100;
         public int SPECIMEN_LEVEL_HEIGHT = 60;
         public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
         public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 800;
-        public int HIGH_BAR_HEIGHT = 580;
+        public int HIGH_BAR_HEIGHT = 550;
+        public int HIGHBAR_PRE_HEIGHT = 400;
         public int TOLERANCE = 20;
         public double MAX_POWER_UP = 0.2;
         public double MAX_POWER_DOWN = -0.1;
@@ -64,7 +65,8 @@ public class Lift implements Component {
         LIFT_SPECIMEN_PRE_DEPOSIT,
         LIFT_SPECIMEN_HIGH_BAR,
         HIGH_BAR,
-        SPECIMEN_LEVEL
+        SPECIMEN_LEVEL,
+        HIGHBAR_PRE_HEIGHT,
     }
 
     public void setMotorPower(double power) {
@@ -122,9 +124,18 @@ public class Lift implements Component {
             case HIGH_BAR:
                 setTarget(PARAMS.HIGH_BAR_HEIGHT);
                 break;
+
+            case HIGHBAR_PRE_HEIGHT:
+                setTarget(PARAMS.HIGHBAR_PRE_HEIGHT);
+                break;
         }
     }
 
+ //   private double getControlPower() {
+        double pidPower = -liftController.update(liftMotor.getCurrentPosition());
+
+        return pidPower + feedForwardPower();
+    }
     private double getControlPower() {
         double pidPower = -liftController.update(liftMotor.getCurrentPosition());
 
@@ -202,4 +213,6 @@ public class Lift implements Component {
     public void setHighBar() {
         liftState = liftState.HIGH_BAR;
     }
+
+    public void setHighBarPreHeight(){ liftState = liftState.HIGHBAR_PRE_HEIGHT; }
 }

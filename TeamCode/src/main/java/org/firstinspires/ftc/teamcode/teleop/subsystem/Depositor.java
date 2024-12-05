@@ -15,7 +15,7 @@ public class Depositor implements Component {
         public double depositorBackwardPosition = 0.375;
         public double depositorDownPosition = 0.075;
         public double depositorUpPosition = 0.65;
-        public double depositorHighBasket = 0.45;
+        public double depositorHighBasket = 0.5;
         public double depositorNeutralPosition = 0.5;
         public double gripperClosedPosition = 0.99;
         public double gripperOpenedPosition = 0.075;
@@ -29,6 +29,7 @@ public class Depositor implements Component {
         public final static int DEPOSITOR_BACK_TIME_MS = 250;
         public final static int DEPOSITOR_UP_TIME_MS = 400;
         public final static int DEPOSITOR_DOWN_TIME_MS = 400;
+        public final static int DEPOSITOR_HIGH_BASKET_TIME_MS = 400;
     }
 
     Telemetry telemetry;
@@ -140,8 +141,16 @@ public class Depositor implements Component {
         rotationServo.setPosition(PARAMS.depositorNeutralPosition);
     }
 
+    private void moveDepositorHighBasket() {
+        rotationServo.setPosition(PARAMS.depositorHighBasket);
+    }
+
     public void setDepositorForward() {
         depositorState = DepositorState.DEPOSITOR_FORWARD;
+    }
+
+    public void setDepositorHighBasket() {
+        depositorState = DepositorState.DEPOSITOR_HIGH_BASKET;
     }
 
     public void setDepositorBackward() {
@@ -173,10 +182,6 @@ public class Depositor implements Component {
 
     public void setGripperOpen() {
         gripperState = GripperState.GRIPPER_OPEN;
-    }
-
-    public void moveDepositorHighBasket() {
-        depositorState = DepositorState.DEPOSITOR_HIGH_BASKET;
     }
     }
 

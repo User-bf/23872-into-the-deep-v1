@@ -107,18 +107,18 @@ public class PIDController {
             derivative = kD * (error - previousError) / dT;
         }
 
-        telemetry.addData("PID integral", integral);
-        telemetry.addData("PID derivative", derivative);
-        telemetry.addData("PID shouldReset", shouldReset);
+//        telemetry.addData("PID integral", integral);
+//        telemetry.addData("PID derivative", derivative);
+//        telemetry.addData("PID shouldReset", shouldReset);
 
         previousTime = currentTime;
         previousError = error;
 
         double correction = proportional + integral + derivative;
 
-        telemetry.addData("PID correction", correction);
-        telemetry.addData("PID Math.signum(correction)", Math.signum(correction));
-        telemetry.addData("PID Range.clip(Math.abs(correction)", Range.clip(Math.abs(correction), lowerOutputBound, higherOutputBound));
+//        telemetry.addData("PID correction", correction);
+//        telemetry.addData("PID Math.signum(correction)", Math.signum(correction));
+//        telemetry.addData("PID Range.clip(Math.abs(correction)", Range.clip(Math.abs(correction), lowerOutputBound, higherOutputBound));
 
         return Math.signum(correction) * Range.clip(Math.abs(correction),
                 lowerOutputBound, higherOutputBound);

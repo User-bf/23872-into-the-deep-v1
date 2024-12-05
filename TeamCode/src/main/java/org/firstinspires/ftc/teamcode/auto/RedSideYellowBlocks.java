@@ -87,6 +87,7 @@ public class RedSideYellowBlocks extends LinearOpMode {
                         new ParallelAction(
                                 robot.extension.gotoRetract(),
                                 robot.lift.gotoHighBasket(),
+                                new SleepAction(0.5),
                                 robot.depositor.gotoUp(),
                                 depositPreloadApproach
                         ),

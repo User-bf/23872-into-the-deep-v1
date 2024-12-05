@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.teleop.BrainSTEMRobot;
 import org.firstinspires.ftc.teamcode.teleop.commands.depositorCommands.DepositorBackCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.depositorCommands.DepositorForwardCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.gripperCommands.GripperCloseCommand;
+import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.HighBarPreHeightCommand;
 import org.firstinspires.ftc.teamcode.teleop.commands.liftCommands.LiftSpecimenPreDeposit;
 
 public class SpecimenPreDeposit extends SequentialCommandGroup {
@@ -16,7 +17,8 @@ public class SpecimenPreDeposit extends SequentialCommandGroup {
         super(
                 new GripperCloseCommand(robot.depositor, telemetry),
                 new LiftSpecimenPreDeposit(robot.lift, telemetry),
-                new DepositorForwardCommand(robot.depositor, telemetry)
+                new DepositorForwardCommand(robot.depositor, telemetry),
+                new HighBarPreHeightCommand(robot.lift,telemetry)
         );
 
     }
