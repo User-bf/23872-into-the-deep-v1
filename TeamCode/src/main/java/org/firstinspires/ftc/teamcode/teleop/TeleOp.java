@@ -70,8 +70,9 @@ public class TeleOp extends LinearOpMode {
         } else if (gamepad2.dpad_down) {
             new LiftLowBasketCommand(robot.lift, telemetry).schedule();
         }
-        if (gamepad2.y)
+        if (gamepad2.y) {
             new DepositSpecimenHighBarSequenceCommand(robot, telemetry).schedule();
+        }
     }
 
     private void driver1CollectorControls(BrainSTEMRobot robot){

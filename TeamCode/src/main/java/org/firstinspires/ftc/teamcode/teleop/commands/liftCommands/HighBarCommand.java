@@ -33,7 +33,7 @@ public class HighBarCommand extends CommandBase{
     }
 
     public boolean isFinished() {
-        return lift.inTolerance();
+        return lift.greaterHighBar();
     }
 }
 

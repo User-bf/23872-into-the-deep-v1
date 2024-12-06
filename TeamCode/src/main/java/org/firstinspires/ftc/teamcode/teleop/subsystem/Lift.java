@@ -122,7 +122,6 @@ public class Lift implements Component {
                 break;
 
             case HIGH_BAR:
-                setTarget(PARAMS.HIGH_BAR_HEIGHT);
                 break;
 
             case HIGHBAR_PRE_HEIGHT:
@@ -131,11 +130,10 @@ public class Lift implements Component {
         }
     }
 
- //   private double getControlPower() {
-        double pidPower = -liftController.update(liftMotor.getCurrentPosition());
-
-        return pidPower + feedForwardPower();
+    public boolean greaterHighBar() {
+        return liftMotor.getCurrentPosition() > PARAMS.HIGH_BAR_HEIGHT;
     }
+
     private double getControlPower() {
         double pidPower = -liftController.update(liftMotor.getCurrentPosition());
 
@@ -153,12 +151,13 @@ public class Lift implements Component {
     @Override
     public void update() {
         selectState();
-        double power = getControlPower();
-//        if (inTolerance() && power < 0) {
-//            power = Math.max(power, PARAMS.MAX_POWER_DOWN);
-//        } else if (inTolerance() && power > 0) {
-//            power = Math.min(power, PARAMS.MAX_POWER_UP);
-//        }
+        double power;
+
+        if(liftState == LiftState.HIGH_BAR) {
+            power = 1.0;
+        } else {
+            power = getControlPower();
+        }
 
         setMotorPower(power);
 
