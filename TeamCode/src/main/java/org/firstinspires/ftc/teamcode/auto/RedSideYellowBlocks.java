@@ -28,10 +28,10 @@ public class RedSideYellowBlocks extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         Pose2d beginPose = new Pose2d(-39, -64, Math.toRadians(0));
-        Pose2d depositPose = new Pose2d(-58, -58, Math.toRadians(45));
-        Pose2d rightBlockPose = new Pose2d(-55, -55, Math.toRadians(85));
-        Pose2d centerBlockPose = new Pose2d(-55, -55, Math.toRadians(105));
-        Pose2d leftBlockPose = new Pose2d(-45, -55, Math.toRadians(128));
+        Pose2d depositPose = new Pose2d(-60, -61, Math.toRadians(40));
+        Pose2d rightBlockPose = new Pose2d(-53, -55, Math.toRadians(85));
+        Pose2d centerBlockPose = new Pose2d(-55, -55, Math.toRadians(100));
+        Pose2d leftBlockPose = new Pose2d(-49, -50, Math.toRadians(130));
         Pose2d parkPose = new Pose2d(-24, 0, Math.toRadians(90));
 
         BrainSTEMRobot robot = new BrainSTEMRobot(telemetry, hardwareMap, beginPose);
@@ -47,7 +47,9 @@ public class RedSideYellowBlocks extends LinearOpMode {
         TrajectoryActionBuilder centerBlockTrajectory = drive.actionBuilder(depositPose)
                 .splineToLinearHeading(centerBlockPose, Math.toRadians(100));
 
-        TrajectoryActionBuilder leftBlockTrajectory = drive.actionBuilder(depositPose);
+        TrajectoryActionBuilder leftBlockTrajectory = drive.actionBuilder(depositPose)
+                .setReversed(true)
+                .splineToLinearHeading(leftBlockPose, Math.toRadians(100));
 
         TrajectoryActionBuilder depositRightBlockTrajectory = drive.actionBuilder(rightBlockPose)
                 .setReversed(true)
@@ -92,7 +94,7 @@ public class RedSideYellowBlocks extends LinearOpMode {
                                 depositPreloadApproach
                         ),
                         robot.depositor.gotoBackward(),
-                        new SleepAction(0.5),
+                        new SleepAction(0.35),
                         robot.depositor.openClaw(),
                         new SleepAction(0.5),
                         robot.depositor.gotoUp(),
@@ -107,14 +109,14 @@ public class RedSideYellowBlocks extends LinearOpMode {
                         robot.depositor.gotoDown(),
                         robot.extension.gotoMax(),
                         robot.collector.collectorInAction(),
-                        new SleepAction(2.0),
+                        new SleepAction(1.5),
                         robot.collector.collectorOffAction(),
                         robot.extension.gotoRetract(),
 
                         // DEPOSIT SEQUENCE
                         robot.lift.gotoGrab(),
                         robot.depositor.closeClaw(),
-                        new SleepAction(0.35),
+                        new SleepAction(0.25),
                         robot.lift.gotoDeconflict(),
                         robot.depositor.gotoUp(),
                         new SleepAction(0.25),
@@ -138,9 +140,9 @@ public class RedSideYellowBlocks extends LinearOpMode {
 
                         // COLLECT SEQUENCE
                         robot.depositor.gotoDown(),
-                        robot.extension.gotoMax(),
+                        robot.extension.gotoCenterBlock(),
                         robot.collector.collectorInAction(),
-                        new SleepAction(2.0),
+                        new SleepAction(3.0),
                         robot.collector.collectorOffAction(),
                         robot.extension.gotoRetract(),
 
@@ -171,8 +173,11 @@ public class RedSideYellowBlocks extends LinearOpMode {
 
                         // COLLECT SEQUENCE
                         robot.depositor.gotoDown(),
-                        robot.extension.gotoMax(),
-                        robot.collector.collectorInAction(),
+                        new ParallelAction(
+                                robot.collector.collectorInAction(),
+                                robot.extension.gotoLeftBlock()
+                        ),
+
                         new SleepAction(2.0),
                         robot.collector.collectorOffAction(),
                         robot.extension.gotoRetract(),
@@ -180,8 +185,9 @@ public class RedSideYellowBlocks extends LinearOpMode {
                         // DEPOSIT SEQUENCE
                         robot.lift.gotoGrab(),
                         robot.depositor.closeClaw(),
-                        new SleepAction(0.35),
+                        new SleepAction(0.45),
                         robot.lift.gotoDeconflict(),
+                        new SleepAction(1.0),
                         robot.depositor.gotoUp(),
                         new SleepAction(0.5),
                         robot.lift.gotoHighBasket(),

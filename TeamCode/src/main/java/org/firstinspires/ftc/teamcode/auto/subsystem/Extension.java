@@ -34,6 +34,8 @@ public class Extension implements Component {
         public int TOLERANCE = 40;
 
         public static final int EXTENSION_MAX = 900;
+        public static final int EXTENSION_LEFT_BLOCK = 575;
+        public static final int EXTENSION_CENTER_BLOCK = 600;
         public static final int EXTENSION_MIN = 0;
         public int EXTENSION_CUSTOM = 10;
         public static final int RETRACT_POSITION = 0;
@@ -207,6 +209,72 @@ public class Extension implements Component {
         return new GotoMax();
     }
 
+    public class GotoLeftBlock implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                target = Params.EXTENSION_LEFT_BLOCK;
+                extensionState = ExtensionState.CUSTOM;
+                initialized = true;
+            }
+
+            if (extension.getCurrentPosition() < target) {
+                extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                setMotorPower(1.0);
+            } else {
+                extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                setMotorPower(0);
+            }
+
+            telemetry.addData("Extension Target", target);
+            telemetry.addData("Extension Position", extension.getCurrentPosition());
+            telemetry.addData("Extension Power", extension.getPower());
+            telemetry.addData("Extension InTolerance", inTolerance());
+
+
+            return extension.getCurrentPosition() < target;
+        }
+    }
+
+    public Action gotoCenterBlock() {
+        return new GotoCenterBlock();
+    }
+
+    public class GotoCenterBlock implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                target = Params.EXTENSION_CENTER_BLOCK;
+                extensionState = ExtensionState.CUSTOM;
+                initialized = true;
+            }
+
+            if (extension.getCurrentPosition() < target) {
+                extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                setMotorPower(1.0);
+            } else {
+                extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                setMotorPower(0);
+            }
+
+            telemetry.addData("Extension Target", target);
+            telemetry.addData("Extension Position", extension.getCurrentPosition());
+            telemetry.addData("Extension Power", extension.getPower());
+            telemetry.addData("Extension InTolerance", inTolerance());
+
+
+            return extension.getCurrentPosition() < target;
+        }
+    }
+
+    public Action gotoLeftBlock() {
+        return new GotoLeftBlock();
+    }
+
     public class GotoRetract implements Action {
         private boolean initialized = false;
         private boolean continueRunning = true;
@@ -229,6 +297,8 @@ public class Extension implements Component {
             return continueRunning;
         }
     }
+
+
 
     public Action gotoRetract() {
         return new GotoRetract();
