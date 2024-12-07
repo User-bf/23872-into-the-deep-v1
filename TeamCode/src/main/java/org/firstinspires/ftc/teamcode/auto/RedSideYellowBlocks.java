@@ -28,7 +28,7 @@ public class RedSideYellowBlocks extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         Pose2d beginPose = new Pose2d(-39, -64, Math.toRadians(0));
-        Pose2d depositPose = new Pose2d(-60, -61, Math.toRadians(40));
+        Pose2d depositPose = new Pose2d(-60, -61, Math.toRadians(35));
         Pose2d rightBlockPose = new Pose2d(-53, -55, Math.toRadians(85));
         Pose2d centerBlockPose = new Pose2d(-55, -55, Math.toRadians(100));
         Pose2d leftBlockPose = new Pose2d(-49, -50, Math.toRadians(130));

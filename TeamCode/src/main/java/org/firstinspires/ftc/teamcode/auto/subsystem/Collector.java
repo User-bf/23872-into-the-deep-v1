@@ -116,7 +116,6 @@ public class Collector implements Component {
     public Action collectorInAction() {
         return new CollectorIn();
     }
-
     public class CollectorOff implements Action {
         private boolean initialized = false;
 
