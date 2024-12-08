@@ -59,7 +59,7 @@ public class Collector implements Component {
             }
 
             case EJECT: {
-                colletorOut();
+                collectorOut();
                 break;
             }
         }
@@ -73,7 +73,7 @@ public class Collector implements Component {
         collectorMotor.setPower(1.0);
     }
 
-    private void colletorOut() {
+    private void collectorOut() {
         collectorMotor.setPower(-1.0);
     }
 

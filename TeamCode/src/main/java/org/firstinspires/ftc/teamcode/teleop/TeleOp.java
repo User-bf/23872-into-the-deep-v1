@@ -74,9 +74,9 @@ public class TeleOp extends LinearOpMode {
 
     private void driver1LiftControls(BrainSTEMRobot robot) {
         if (gamepad1.dpad_up) {
-            new LiftHighBasketCommand(robot.lift, telemetry).schedule();
+            new LiftHighBasketCommand(robot.lift, telemetry);
         } else if (gamepad1.dpad_down) {
-            new LiftLowBasketCommand(robot.lift, telemetry).schedule();
+            new LiftLowBasketCommand(robot.lift, telemetry);
         }
     }
 
@@ -103,14 +103,14 @@ public class TeleOp extends LinearOpMode {
 //        }
 //
         if (gamepad1.right_trigger > 0.5) {
-            new DepositReleaseSequenceCommand(robot, telemetry).schedule();
+            new DepositReleaseSequenceCommand(robot, telemetry);
         }
 //        else {
 //            new GripperCloseCommand(robot.depositor, telemetry).schedule();
 //        }
 
         if (gamepad1.right_bumper) {
-            new DepositGripSequenceCommand(robot, telemetry).schedule();
+            new DepositGripSequenceCommand(robot, telemetry);
         }
 
     }
