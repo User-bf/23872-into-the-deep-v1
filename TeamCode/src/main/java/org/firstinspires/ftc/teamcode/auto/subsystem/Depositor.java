@@ -1,6 +1,10 @@
-package org.firstinspires.ftc.teamcode.teleop.subsystem;
+package org.firstinspires.ftc.teamcode.auto.subsystem;
+
+import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -15,21 +19,19 @@ public class Depositor implements Component {
         public double depositorBackwardPosition = 0.375;
         public double depositorDownPosition = 0.075;
         public double depositorUpPosition = 0.65;
-        public double depositorHighBasket = 0.5;
         public double depositorNeutralPosition = 0.5;
         public double gripperClosedPosition = 0.99;
-        public double gripperOpenedPosition = 0.075;
-        public double gripperLowerPWM = 1300;
-        public double gripperUpperPWM = 2520;
+        public double gripperOpenedPosition = 0.01;
+        public double gripperLowerPWM = 100;
+        public double gripperUpperPWM = 2400;
 
         public final static int GRIPPER_OPEN_TIME_MS = 250;
-        public final static int GRIPPER_CLOSE_TIME_MS = 250;
+        public final static int GRIPPER_CLOSE_TIME_MS = 3000;
 
         public final static int DEPOSITOR_FORWARD_TIME_MS = 250;
         public final static int DEPOSITOR_BACK_TIME_MS = 250;
         public final static int DEPOSITOR_UP_TIME_MS = 400;
         public final static int DEPOSITOR_DOWN_TIME_MS = 400;
-        public final static int DEPOSITOR_HIGH_BASKET_TIME_MS = 400;
     }
 
     Telemetry telemetry;
@@ -62,8 +64,7 @@ public class Depositor implements Component {
         DEPOSITOR_BACKWARD,
         DEPOSITOR_NEUTRAL,
         DEPOSITOR_DOWN,
-        DEPOSITOR_UP,
-        DEPOSITOR_HIGH_BASKET,
+        DEPOSITOR_UP
     }
 
     @Override
@@ -109,10 +110,6 @@ public class Depositor implements Component {
             case DEPOSITOR_NEUTRAL:
                 moveDepositorNeutral();
                 break;
-
-            case DEPOSITOR_HIGH_BASKET:
-                moveDepositorHighBasket();
-                break;
         }
     }
 
@@ -126,7 +123,7 @@ public class Depositor implements Component {
         rotationServo.setPosition(PARAMS.depositorForwardPosition);
     }
 
-    private void moveDepositorBackward() {
+    public void moveDepositorBackward() {
         rotationServo.setPosition(PARAMS.depositorBackwardPosition);
     }
 
@@ -141,16 +138,8 @@ public class Depositor implements Component {
         rotationServo.setPosition(PARAMS.depositorNeutralPosition);
     }
 
-    private void moveDepositorHighBasket() {
-        rotationServo.setPosition(PARAMS.depositorHighBasket);
-    }
-
     public void setDepositorForward() {
         depositorState = DepositorState.DEPOSITOR_FORWARD;
-    }
-
-    public void setDepositorHighBasket() {
-        depositorState = DepositorState.DEPOSITOR_HIGH_BASKET;
     }
 
     public void setDepositorBackward() {
@@ -183,5 +172,97 @@ public class Depositor implements Component {
     public void setGripperOpen() {
         gripperState = GripperState.GRIPPER_OPEN;
     }
+
+    public class GotoBackward implements Action {
+        private boolean initialized = false;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                moveDepositorBackward();
+                initialized = true;
+            }
+
+            return false;
+        }
     }
+
+    public Action gotoBackward() {
+        return new GotoBackward();
+    }
+
+    public class GotoForward implements Action {
+        private boolean initialized = false;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                moveDepositorForward();
+                initialized = true;
+            }
+
+            return false;
+        }
+    }
+
+    public Action gotoForward() {
+        return new GotoForward();
+    }
+
+    public class GotoUp implements Action {
+        private boolean initialized = false;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                moveDepositorUp();
+                initialized = true;
+            }
+
+            return false;
+        }
+    }
+
+    public Action gotoUp() {
+        return new GotoUp();
+    }
+
+    public Action gotoDown() {
+        return new GotoDown();
+    }
+
+    public class GotoDown implements Action {
+        private boolean initialized = false;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                moveDepositorDown();
+                initialized = true;
+            }
+
+            return false;
+        }
+    }
+
+    public class OpenClaw implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            openGripper();
+            return false;
+        }
+    }
+
+    public Action openClaw() {
+        return new OpenClaw();
+    }
+
+    public class CloseClaw implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            closeGripper();
+            return false;
+        }
+    }
+
+    public Action closeClaw() {
+        return new CloseClaw();
+    }
+}
 

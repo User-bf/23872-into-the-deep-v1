@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class PIDController {
 
     private double target;
@@ -12,10 +15,21 @@ public class PIDController {
     private double lowerInputBound = Double.NEGATIVE_INFINITY, higherInputBound = Double.POSITIVE_INFINITY;
     private double lowerOutputBound = Double.NEGATIVE_INFINITY, higherOutputBound = Double.POSITIVE_INFINITY;
 
+    Telemetry telemetry;
+
     public PIDController(double kP, double kI, double kD) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
+
+        shouldReset = true;
+    }
+
+    public PIDController(double kP, double kI, double kD, Telemetry telemetry) {
+        this.kP = kP;
+        this.kI = kI;
+        this.kD = kD;
+        this.telemetry = telemetry;
 
         shouldReset = true;
     }
@@ -62,6 +76,13 @@ public class PIDController {
 
         double error = value - target;
 
+        if (telemetry != null) {
+            telemetry.addData("PID Value", value);
+            telemetry.addData("PID Target", target);
+
+            telemetry.addData("PID Error", error);
+        }
+
         return updateWithError(error);
     }
 
@@ -86,10 +107,18 @@ public class PIDController {
             derivative = kD * (error - previousError) / dT;
         }
 
+//        telemetry.addData("PID integral", integral);
+//        telemetry.addData("PID derivative", derivative);
+//        telemetry.addData("PID shouldReset", shouldReset);
+
         previousTime = currentTime;
         previousError = error;
 
         double correction = proportional + integral + derivative;
+
+//        telemetry.addData("PID correction", correction);
+//        telemetry.addData("PID Math.signum(correction)", Math.signum(correction));
+//        telemetry.addData("PID Range.clip(Math.abs(correction)", Range.clip(Math.abs(correction), lowerOutputBound, higherOutputBound));
 
         return Math.signum(correction) * Range.clip(Math.abs(correction),
                 lowerOutputBound, higherOutputBound);

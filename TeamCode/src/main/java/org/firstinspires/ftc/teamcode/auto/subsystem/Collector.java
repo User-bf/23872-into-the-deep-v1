@@ -1,13 +1,15 @@
-package org.firstinspires.ftc.teamcode.teleop.subsystem;
+package org.firstinspires.ftc.teamcode.auto.subsystem;
+
+import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.CachingMotor;
-import org.firstinspires.ftc.teamcode.util.CachingServo;
 
 @Config
 public class Collector implements Component {
@@ -80,11 +82,7 @@ public class Collector implements Component {
     }
 
     private void collectorOut() {
-<<<<<<< HEAD
-        collectorMotor.setPower(-1.0);
-=======
         collectorMotor.setPower(-0.99);
->>>>>>> 9ab5b07ac9d42dee42c582e5627c9c58eed1026c
     }
 
     public void setIntake() {
@@ -99,4 +97,42 @@ public class Collector implements Component {
         collectorState = CollectorState.LEVEL;
     }
 
+    public class CollectorIn implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                collectorState = CollectorState.INTAKE;
+                initialized = true;
+            }
+
+            update();
+
+            return false;
+        }
+    }
+
+    public Action collectorInAction() {
+        return new CollectorIn();
+    }
+    public class CollectorOff implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                collectorState = CollectorState.LEVEL;
+                initialized = true;
+            }
+
+            update();
+
+            return false;
+        }
+    }
+
+    public Action collectorOffAction() {
+        return new CollectorOff();
+    }
 }

@@ -1,10 +1,12 @@
-package org.firstinspires.ftc.teamcode.teleop.subsystem;
+package org.firstinspires.ftc.teamcode.auto.subsystem;
+
+import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -14,24 +16,20 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 public class Lift implements Component {
     public static class Params {
         ;
-        public double liftKp = 0.03;
-        public double liftKi = 0.0;
-        public double liftKd = 0.0;
-        public double liftKs = 0.0;
+        public double liftKp = 0.02;
+        public double liftKi = 0.01;
+        public double liftKd = 0.0001;
 
         public int BASE_HEIGHT = 25;
         public int DECONFLICT_HEIGHT = 200;
-        public int GRAB_HEIGHT = 17;
-        public int LOW_BASKET_HEIGHT = 650;
-        public int HIGH_BASKET_HEIGHT = 1100;
-        public int SPECIMEN_LEVEL_HEIGHT = 60;
+        public int GRAB_HEIGHT = 20;
+        public int LOW_BASKET_HEIGHT = 600;
+        public int HIGH_BASKET_HEIGHT = 1030;
+        public int SPECIMEN_LEVEL_HEIGHT = 80;
         public int LIFT_SPECIMEN_PRE_DEPOSIT_HEIGHT = 200;
-        public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 800;
-        public int HIGH_BAR_HEIGHT = 640;
-        public int HIGHBAR_PRE_HEIGHT = 250;
-        public int TOLERANCE = 20;
-        public double MAX_POWER_UP = 0.2;
-        public double MAX_POWER_DOWN = -0.1;
+        public int LIFT_SPECIMEN_HIGH_BAR_HEIGHT = 500;
+        public int HIGH_BAR_HEIGHT = 800;
+        public int TOLERANCE = 30;
     }
 
     PIDController liftController;
@@ -42,8 +40,8 @@ public class Lift implements Component {
     public LiftState liftState;
 
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
-        liftController = new PIDController(PARAMS.liftKp, PARAMS.liftKi, PARAMS.liftKd, telemetry);
-        liftController.setInputBounds(0, 1500);
+        liftController = new PIDController(PARAMS.liftKp, PARAMS.liftKi, PARAMS.liftKd);
+        liftController.setInputBounds(0, 4000);
         liftController.setOutputBounds(-0.1, 0.99);
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
@@ -65,11 +63,11 @@ public class Lift implements Component {
         LIFT_SPECIMEN_PRE_DEPOSIT,
         LIFT_SPECIMEN_HIGH_BAR,
         HIGH_BAR,
-        SPECIMEN_LEVEL,
-        HIGHBAR_PRE_HEIGHT,
+        SPECIMEN_LEVEL
     }
 
     public void setMotorPower(double power) {
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setPower(power);
     }
 
@@ -78,8 +76,8 @@ public class Lift implements Component {
 //        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    private void setTarget(double target) {
-        liftController.setTarget(target);
+    private void setTarget(int target) {
+        liftMotor.setTargetPosition(target);
     }
 
     private void selectState() {
@@ -122,16 +120,9 @@ public class Lift implements Component {
                 break;
 
             case HIGH_BAR:
-                break;
-
-            case HIGHBAR_PRE_HEIGHT:
-                setTarget(PARAMS.HIGHBAR_PRE_HEIGHT);
+                setTarget(PARAMS.HIGH_BAR_HEIGHT);
                 break;
         }
-    }
-
-    public boolean greaterHighBar() {
-        return liftMotor.getCurrentPosition() > PARAMS.HIGH_BAR_HEIGHT;
     }
 
     private double getControlPower() {
@@ -141,31 +132,17 @@ public class Lift implements Component {
     }
 
     private double feedForwardPower() {
-//        double x = liftMotor.getCurrentPosition();
-//        double m = -0.0;
-//        double b = -0.0;
+        double x = liftMotor.getCurrentPosition();
+        double m = -0.0;
+        double b = -0.0;
 
-        return PARAMS.liftKs;
+        return m * x + b;
     }
 
     @Override
     public void update() {
         selectState();
-        double power;
-
-        if(liftState == LiftState.HIGH_BAR) {
-            power = 1.0;
-        } else {
-            power = getControlPower();
-        }
-
-        setMotorPower(power);
-
-        telemetry.addData("liftController Target", liftController.getTarget());
-        telemetry.addData("liftMotor Position", liftMotor.getCurrentPosition());
-        telemetry.addData("liftMotor Power", liftMotor.getPower());
-        telemetry.addData("Lift State", liftState);
-
+        setMotorPower(1.0);
     }
 
     public void setBase() {
@@ -181,7 +158,11 @@ public class Lift implements Component {
     }
 
     public boolean inTolerance() {
-        return Math.abs(liftMotor.getCurrentPosition() - liftController.getTarget()) < PARAMS.TOLERANCE;
+        return Math.abs(liftMotor.getCurrentPosition() - liftMotor.getTargetPosition()) < PARAMS.TOLERANCE;
+    }
+
+    public boolean inTightTolerance() {
+        return Math.abs(liftMotor.getCurrentPosition() - liftMotor.getTargetPosition()) < (PARAMS.TOLERANCE - 10);
     }
 
     public void setLowBasket() {
@@ -213,5 +194,67 @@ public class Lift implements Component {
         liftState = liftState.HIGH_BAR;
     }
 
-    public void setHighBarPreHeight(){ liftState = liftState.HIGHBAR_PRE_HEIGHT; }
+    public class GotoHighBasket implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                liftState = LiftState.HIGH_BASKET;
+                initialized = true;
+                liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                liftMotor.setPower(1.0);
+            }
+
+            if (liftMotor.getCurrentPosition() > 750) {
+                update();
+            }
+
+            packet.put("Lift Pos", liftMotor.getCurrentPosition());
+
+            return liftMotor.getCurrentPosition() > 1000;
+        }
+    }
+
+    public Action gotoHighBasket() {
+        return new GotoHighBasket();
+    }
+
+    public class GotoGrab implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                liftState = LiftState.GRAB;
+                initialized = true;
+            }
+
+            update();
+            return !inTightTolerance();
+        }
+    }
+
+    public Action gotoGrab() {
+        return new GotoGrab();
+    }
+
+    public class GotoDeconflict implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                liftState = LiftState.DECONFLICT;
+                initialized = true;
+            }
+
+            update();
+            return !inTightTolerance();
+        }
+    }
+
+    public Action gotoDeconflict() {
+        return new GotoDeconflict();
+    }
 }
